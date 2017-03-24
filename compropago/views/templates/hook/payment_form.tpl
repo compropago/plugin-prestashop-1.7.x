@@ -22,13 +22,28 @@
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
 *}
+
 <section>
+{if $flag == false}
+
+<div class="cprow">
+    <div class="cpcolumn">
+        <br>
+        <h1>{l s="¡Servicio temporalmente fuera de servicio!" d='Modules.Compropago.Shop'}</h1>
+    </div>
+</div>
+
+{else}
+
 <div class="cprow">
     <div class="cpcolumn">
         <h1>{l s="Tiendas disponibles" d='Modules.Compropago.Shop'}</h1>
         <p>{l s="Antes de finalizar seleccione la tienda de su preferencia" d='Modules.Compropago.Shop'}</p>
     </div>
 </div>
+
+{/if}
+
 
 <form action="{$action}" id="payment-form" method="POST">
   <div class="cprow">

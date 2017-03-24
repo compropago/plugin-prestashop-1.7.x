@@ -812,10 +812,20 @@ class Compropago extends PaymentModule
                 }
             }
         }
+
+        if ($f_providers[0] == NULL){
+            $provflag = false;
+            $f_providers = 0;
+        } else {
+            $provflag = true;
+        }
+        
+
         $this->context->smarty->assign(array(
             'showLogo'  => $this->showLogo,
             'action'    => $this->context->link->getModuleLink($this->name, 'validation', array(), true),
-            'providers' => $f_providers
+            'providers' => $f_providers,
+            'flag'      => $provflag
         ));
         return $this->display(__FILE__, './views/templates/hook/payment_form.tpl');
     }

@@ -4,7 +4,7 @@
 ## Descripción
 Este modulo provee el servicio de ComproPago para poder generar intenciones de pago dentro de la plataforma Prestashop.
 
-Con ComproPago puede recibir pagos en OXXO, 7Eleven y muchas tiendas más en todo México.
+Con ComproPago puede recibir pagos en 7Eleven, Extra y muchas tiendas más en todo México.
 
 [Registrarse en ComproPago ](https://compropago.com)
 
@@ -25,7 +25,7 @@ Este modulo provee el servicio de ComproPago para poder generar intensiones de p
 
 ## Requerimientos
 * [Prestashop 1.7.x +](http://www.prestashop.com/index.php)
-* [PHP >= 5.5](http://www.php.net/)
+* [PHP >= 5.4](http://www.php.net/)
 * [PHP JSON extension](http://php.net/manual/en/book.json.php)
 * [PHP cURL extension](http://php.net/manual/en/book.curl.php)
 

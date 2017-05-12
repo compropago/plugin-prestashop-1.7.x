@@ -54,6 +54,7 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
         }
 
         $customer = new Customer($cart->id_customer);
+        $address = new Address($cart->id_address_invoice);
 
         if (!Validate::isLoadedObject($customer)) {
             Tools::redirect('index.php?controller=order&step=1');
@@ -63,7 +64,9 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
         $total = (float)$cart->getOrderTotal(true, Cart::BOTH);
         
 
-        $compropagoStore = (!isset($_POST['compropagoProvider']) || empty($_POST['compropagoProvider'])) ? 'OXXO' : $_POST['compropagoProvider'];
+        $compropagoStore = (!isset($_POST['compropagoProvider']) || empty($_POST['compropagoProvider'])) ? 'SEVEN_ELEVEN' : $_POST['compropagoProvider'];
+        $compropagoLatitude = (!isset($_POST['compropago_latitude']) || empty($_POST['compropago_latitude'])) ? '' : $_POST['compropago_latitude'];
+        $compropagoLongitude = (!isset($_POST['compropago_longitude']) || empty($_POST['compropago_longitude'])) ? '' : $_POST['compropago_longitude'];
 
         $mailVars = array(
             '{check_name}' => Configuration::get('CHEQUE_NAME'),
@@ -83,7 +86,10 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
                     'currency'           => $currency->iso_code,
                     'image_url'          => null,
                     'app_client_name'    => 'prestashop',
-                    'app_client_version' => _PS_VERSION_
+                    'app_client_version' => _PS_VERSION_,
+                    'latitude'           => $compropagoLatitude,
+                    'longitude'          => $compropagoLongitude,
+                    'cp'                 => $address->postcode
                     ];
 
         $order = Factory::getInstanceOf('PlaceOrderInfo', $order_info);

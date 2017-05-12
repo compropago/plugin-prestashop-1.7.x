@@ -8,23 +8,23 @@
     "packages": [
         {
             "name": "compropago/php-sdk",
-            "version": "3.0.3",
+            "version": "3.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/compropago/compropago-php.git",
-                "reference": "7fc989c5e94e2d84de2e79753f69809b7377fcb2"
+                "reference": "1a1acafe2d965c8e0534b59f0db5a6af5a3a5e17"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/compropago/compropago-php/zipball/7fc989c5e94e2d84de2e79753f69809b7377fcb2",
-                "reference": "7fc989c5e94e2d84de2e79753f69809b7377fcb2",
+                "url": "https://api.github.com/repos/compropago/compropago-php/zipball/1a1acafe2d965c8e0534b59f0db5a6af5a3a5e17",
+                "reference": "1a1acafe2d965c8e0534b59f0db5a6af5a3a5e17",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.5"
+                "php": ">=5.4"
             },
             "require-dev": {
-                "phpunit/phpunit": ">=5.3"
+                "phpunit/phpunit": ">=4.8"
             },
             "type": "library",
             "autoload": {
@@ -48,7 +48,7 @@
                 "pagos internet",
                 "payment gateway"
             ],
-            "time": "2017-02-01T20:13:46+00:00"
+            "time": "2017-05-09T01:41:37+00:00"
         }
     ],
     "packages-dev": [],

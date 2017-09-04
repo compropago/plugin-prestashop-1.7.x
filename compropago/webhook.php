@@ -19,61 +19,57 @@
  * @author Rolando Lucio <rolando@compropago.com>
  * @since 2.0.0
  */
+ 
+ require_once __DIR__.'/vendor/autoload.php';
+ require_once __DIR__.'/../../config/config.inc.php';
+ require_once __DIR__.'/../../init.php';
+ require_once __DIR__.'/../../classes/PrestaShopLogger.php';
+ require_once __DIR__.'/../../classes/order/Order.php';
+ require_once __DIR__.'/../../classes/order/OrderHistory.php';
 
-require_once __DIR__.'/vendor/autoload.php';
-require_once __DIR__.'/../../config/config.inc.php';
-require_once __DIR__.'/../../init.php';
-require_once __DIR__.'/../../classes/PrestaShopLogger.php';
-
-require_once __DIR__.'/../../classes/order/Order.php';
-require_once __DIR__.'/../../classes/order/OrderHistory.php';
-
-
-if (!defined('_PS_VERSION_')){
+ if (!defined('_PS_VERSION_')){
     die("No se pudo inicializar Prestashop");
-}
+ }
+ 
+ use CompropagoSdk\Factory\Factory;
+ use CompropagoSdk\Client;
+ 
+ $request = @file_get_contents('php://input');
+ header('Content-Type: application/json');
+ 
+ if(!$resp_webhook = Factory::getInstanceOf('CpOrderInfo', $request)){
+     echo json_encode([
+       "status" => "error",
+       "message" => "invalid request",
+       "short_id" => null,
+       "reference" => null
+     ]);
+ }
+ 
+ $config = Configuration::getMultiple(array('COMPROPAGO_PUBLICKEY', 'COMPROPAGO_PRIVATEKEY','COMPROPAGO_MODE'));
 
-use CompropagoSdk\Client;
-use CompropagoSdk\Factory\Factory;
-use CompropagoSdk\Tools\Validations;
+ $publickey     = $config['COMPROPAGO_PUBLICKEY'];
+ $privatekey    = $config['COMPROPAGO_PRIVATEKEY'];
+ $live          = ($config['COMPROPAGO_MODE']==true);
+ 
 
-
-$request = @file_get_contents('php://input');
-
-if(empty($request) || !$resp_webhook = Factory::getInstanceOf("CpOrderInfo",$request)){
-    die('Tipo de Request no Valido');
-}
-
-$config = Configuration::getMultiple(array('COMPROPAGO_PUBLICKEY', 'COMPROPAGO_PRIVATEKEY','COMPROPAGO_MODE'));
-
-$publickey     = $config['COMPROPAGO_PUBLICKEY'];
-$privatekey    = $config['COMPROPAGO_PRIVATEKEY'];
-$live          = ($config['COMPROPAGO_MODE']==true);
-
-if (empty($publickey) || empty($privatekey)){
-    die("Se requieren las llaves de compropago");
-}
-
-
-try{
-
-    $client = new Client(
-        $publickey,
-        $privatekey,
-        $live
-    );
-
-    Validations::validateGateway($client);
+ try{
+    $client = new Client($publickey, $privatekey, $live );
+    
+        if($resp_webhook->short_id == "000000"){
+            echo json_encode([
+              "status" => "success",
+              "message" => "test success",
+              "short_id" => $resp_webhook->short_id,
+              "reference" => null
+            ]);
+        }
 }catch (Exception $e) {
     die($e->getMessage());
 }
 
-if($resp_webhook->id=="ch_00000-000-0000-000000"){
-    die("Probando el WebHook?, Ruta correcta.");
-}
-
 try{
- 
+    
     $response = $client->api->verifyOrder($resp_webhook->id);
 
     if($response->type == 'error'){
@@ -81,8 +77,8 @@ try{
     }
 
     if(
-        !Db::getInstance()->execute("SHOW TABLES LIKE '"._DB_PREFIX_ ."compropago_orders'") ||
-        !Db::getInstance()->execute("SHOW TABLES LIKE '"._DB_PREFIX_ ."compropago_transactions'")
+        !Db::getInstance()->execute("SHOW TABLES LIKE '"  . _DB_PREFIX_ . "compropago_orders'") ||
+        !Db::getInstance()->execute("SHOW TABLES LIKE '" . _DB_PREFIX_ . "compropago_transactions'")
     ){
         die('ComproPago Tables Not Found');
     }

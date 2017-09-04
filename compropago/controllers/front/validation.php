@@ -65,8 +65,6 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
         
 
         $compropagoStore = (!isset($_POST['compropagoProvider']) || empty($_POST['compropagoProvider'])) ? 'SEVEN_ELEVEN' : $_POST['compropagoProvider'];
-        $compropagoLatitude = (!isset($_POST['compropago_latitude']) || empty($_POST['compropago_latitude'])) ? '' : $_POST['compropago_latitude'];
-        $compropagoLongitude = (!isset($_POST['compropago_longitude']) || empty($_POST['compropago_longitude'])) ? '' : $_POST['compropago_longitude'];
 
         $mailVars = array(
             '{check_name}' => Configuration::get('CHEQUE_NAME'),
@@ -84,16 +82,10 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
                     'customer_email'     => $customer->email,
                     'payment_type'       => $compropagoStore,
                     'currency'           => $currency->iso_code,
-                    'image_url'          => null,
-                    'app_client_name'    => 'prestashop',
-                    'app_client_version' => _PS_VERSION_,
-                    'latitude'           => $compropagoLatitude,
-                    'longitude'          => $compropagoLongitude,
-                    'cp'                 => $address->postcode
+                    
                     ];
-
+                    
         $order = Factory::getInstanceOf('PlaceOrderInfo', $order_info);
-
 
         try {
             $response = $this->module->client->api->placeOrder($order);
@@ -101,7 +93,7 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
             die($this->module->l('This payment method is not available.', 'validation') . '<br>' . $e->getMessage());
         }
         
-        if ($response->status != 'pending') {
+        if ($response->type != 'charge.pending') {
             die($this->module->l('This payment method is not available.', 'validation'));
         }
 

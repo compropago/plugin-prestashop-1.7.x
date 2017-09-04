@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "ae186cdd3036400929e939b75b99e5d6",
+    "content-hash": "2293dcdfc518adb1df629cefc86b4d22",
     "packages": [
         {
             "name": "compropago/php-sdk",
-            "version": "3.0.6",
+            "version": "4.0.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/compropago/compropago-php.git",
-                "reference": "1a1acafe2d965c8e0534b59f0db5a6af5a3a5e17"
+                "reference": "3cf55708be74694d39afa93b0f7e5b0a2f671592"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/compropago/compropago-php/zipball/1a1acafe2d965c8e0534b59f0db5a6af5a3a5e17",
-                "reference": "1a1acafe2d965c8e0534b59f0db5a6af5a3a5e17",
+                "url": "https://api.github.com/repos/compropago/compropago-php/zipball/3cf55708be74694d39afa93b0f7e5b0a2f671592",
+                "reference": "3cf55708be74694d39afa93b0f7e5b0a2f671592",
                 "shasum": ""
             },
             "require": {
@@ -48,7 +48,7 @@
                 "pagos internet",
                 "payment gateway"
             ],
-            "time": "2017-05-09T01:41:37+00:00"
+            "time": "2017-09-01T18:10:31+00:00"
         }
     ],
     "packages-dev": [],

@@ -194,7 +194,6 @@ class Compropago extends PaymentModule
         return true;
     }
 
-
     /**
     * Install the tables to save the ComproPago order
     */
@@ -386,7 +385,7 @@ class Compropago extends PaymentModule
     public function hookRetro($enabled, $publickey, $privatekey, $live)
     {
         $error = array(false,'','yes');
-        if($enabled){            
+        if($enabled){
             if(!empty($publickey) && !empty($privatekey) ){
                 try{
                     $client = new Client($publickey, $privatekey, $live);
@@ -552,7 +551,7 @@ class Compropago extends PaymentModule
 
     /**
     * Get the view of options payment
-    * @return array
+    * @return array()
     */
 
     public function hookPaymentOptions($params)
@@ -582,7 +581,7 @@ class Compropago extends PaymentModule
 
     /**
     * Return the payment order
-    * @return array
+    * @return array()
     */
 
     public function hookPaymentReturn($params)
@@ -635,7 +634,7 @@ class Compropago extends PaymentModule
 
     /**
     * Back office form
-    * @return array
+    * @return array() 
     */
 
     public function renderForm()

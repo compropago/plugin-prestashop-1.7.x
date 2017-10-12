@@ -28,7 +28,7 @@
  * @deprecated 1.5.0 This file is deprecated, use moduleFrontController instead
  */
 error_reporting(E_ALL);
-ini_set("display_errors", 0); 
+ini_set("display_errors", 1); 
 
 include(dirname(__FILE__).'/../../config/config.inc.php');
 Tools::displayFileAsDeprecated();

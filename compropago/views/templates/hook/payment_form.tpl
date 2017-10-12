@@ -60,7 +60,10 @@
                         </li>
                     {/foreach}
                 </ul>
+                
+
             {else}
+
                 <div id="cppayment_store">
                     <select name="compropagoProvider" class="providers_list">
                         {foreach $providers as $provider}
@@ -68,6 +71,7 @@
                         {/foreach}
                     </select>
                 </div>
+
             {/if}
         </div>
     </div>

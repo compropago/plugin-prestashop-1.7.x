@@ -48,7 +48,7 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
                 break;
             }
         }
-        
+
         if (!$authorized) {
             die($this->module->l('This payment method is not available.', 'validation'));
         }
@@ -63,19 +63,16 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
         $currency = $this->context->currency;
         $total = (float)$cart->getOrderTotal(true, Cart::BOTH);
         
-
         $compropagoStore = (!isset($_POST['compropagoProvider']) || empty($_POST['compropagoProvider'])) ? 'SEVEN_ELEVEN' : $_POST['compropagoProvider'];
-        $compropagoLatitude = (!isset($_POST['compropago_latitude']) || empty($_POST['compropago_latitude'])) ? '' : $_POST['compropago_latitude'];
-        $compropagoLongitude = (!isset($_POST['compropago_longitude']) || empty($_POST['compropago_longitude'])) ? '' : $_POST['compropago_longitude'];
 
         $mailVars = array(
             '{check_name}' => Configuration::get('CHEQUE_NAME'),
             '{check_address}' => Configuration::get('CHEQUE_ADDRESS'),
             '{check_address_html}' => str_replace("\n", '<br />', Configuration::get('CHEQUE_ADDRESS')));
-
+        
         $result = $this->module->validateOrder((int)$cart->id, Configuration::get('COMPROPAGO_PENDING'), $total, $this->module->displayName, NULL, $mailVars, (int)$currency->id, false, $customer->secure_key);
         $OrderName = 'Ref:' . $this->module->currentOrder . " " . Configuration::get('PS_SHOP_NAME');
-   
+        
         $order_info = [
                     'order_id'           => $this->module->currentOrder,
                     'order_name'         => $OrderName,

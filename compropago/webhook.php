@@ -34,11 +34,9 @@ if (!defined('_PS_VERSION_')){
     die("No se pudo inicializar Prestashop");
 }
 
- 
 use CompropagoSdk\Client;
 use CompropagoSdk\Factory\Factory;
 use CompropagoSdk\Tools\Validations;
-
  
  $request = @file_get_contents('php://input');
  header('Content-Type: application/json');
@@ -57,19 +55,19 @@ $config = Configuration::getMultiple(array('COMPROPAGO_PUBLICKEY', 'COMPROPAGO_P
 $publickey     = $config['COMPROPAGO_PUBLICKEY'];
 $privatekey    = $config['COMPROPAGO_PRIVATEKEY'];
 $live          = ($config['COMPROPAGO_MODE']==true);
- 
 
  try{
      $client = new Client($publickey, $privatekey, $live);
- 
-     if($resp_webhook->short_id == "000000"){
-         echo json_encode([
-           "status" => "success",
-           "message" => "test success",
-           "short_id" => $resp_webhook->short_id,
-           "reference" => null
-         ]);
-     }
+
+    if($resp_webhook->short_id == "000000"){
+        echo json_encode([
+        "status" => "success",
+        "message" => "test success",
+        "short_id" => $resp_webhook->short_id,
+        "reference" => null
+        ]);
+        die();
+    }
 
     if($response->type == 'error'){
         die('Error procesando el numero de orden');
@@ -82,20 +80,20 @@ $live          = ($config['COMPROPAGO_MODE']==true);
         die('ComproPago Tables Not Found');
     }
  
-     $response = $client->api->verifyOrder($resp_webhook->id);
-     
+    $response = $client->api->verifyOrder($resp_webhook->id);
+
     $sql = "SELECT * FROM "._DB_PREFIX_."compropago_orders  WHERE compropagoId = '".$response->id."' ";
 
     if ($row = Db::getInstance()->getRow($sql)){
      switch ($response->type){
          case 'charge.success':
-             // TODO: Actions on success payment
+            $nomestatus = "COMPROPAGO_SUCCESS";
              break;
          case 'charge.pending':
-             // TODO: Actions on pending payment
+            $nomestatus = "COMPROPAGO_PENDING";
              break;
          case 'charge.expired':
-             // TODO: Actions on expired payment
+            $nomestatus = "COMPROPAGO_EXPIRED";
              break;
          default:
              echo json_encode([
@@ -111,7 +109,7 @@ $live          = ($config['COMPROPAGO_MODE']==true);
     
             $order   = new Order($id_order);
             $history = new OrderHistory();
-    
+
             $history->id_order = (int)$order->id;
             $history->changeIdOrderState((int)Configuration::get($nomestatus), (int)($order->id));
     
@@ -145,7 +143,7 @@ $live          = ($config['COMPROPAGO_MODE']==true);
                 "message" => "OK",
                 "short_id" => $response->short_id,
                 "reference" => 'internal-1234'
-              ]);
+            ]);
     
         }else{
             die('El número de orden no se encontro en la tienda');

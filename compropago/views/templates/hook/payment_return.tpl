@@ -27,7 +27,7 @@
 	<div class="compropagoDivFrame" id="compropagodContainer" style="width: 100%;">
     <iframe style="width: 100%;"
         id="compropagodFrame"
-        src="https://compropago.com/comprobante?confirmation_id={$order_id_co}"
+        src="https://compropago.com/comprobante?confirmation_id=ch_fe83ca0a-c698-4c97-94bd-d290970202b3"
         frameborder="0"
         scrolling="yes"> </iframe>
 </div>

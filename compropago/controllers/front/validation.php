@@ -84,14 +84,15 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
                     'image_url'          => null,
                     'app_client_name'    => 'prestashop',
                     'app_client_version' => _PS_VERSION_,
-                    'latitude'           => $compropagoLatitude,
-                    'longitude'          => $compropagoLongitude,
                     'cp'                 => $address->postcode
                     ];
-
-        $order = Factory::getInstanceOf('PlaceOrderInfo', $order_info);
-
-
+        
+        
+        try{
+            $order = Factory::getInstanceOf('PlaceOrderInfo', $order_info);
+        } catch (\Exception $e){
+            die($this->module->l('This payment method is not available.', 'validation'));
+        }
         try {
             $response = $this->module->client->api->placeOrder($order);
         } catch (Exception $e) {

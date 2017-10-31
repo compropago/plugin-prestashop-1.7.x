@@ -50,12 +50,11 @@ class Compropago extends PaymentModule
     public $showLogoCp;
     public $extra_mail_vars;
 
-
     public function __construct()
     {
         $this->name             = 'compropago';
         $this->tab              = 'payments_gateways';
-        $this->version          = '1.0.0';
+        $this->version          = '1.1.0.0';
         $this->author           = 'ComproPago';
         $this->controllers      = array('payment', 'validation');
         $this->currencies       = true;
@@ -70,15 +69,12 @@ class Compropago extends PaymentModule
         if (isset($config['COMPROPAGO_PRIVATEKEY'])) {
             $this->privateKey = $config['COMPROPAGO_PRIVATEKEY'];
         }
-        
-        $this->execMode     = (!empty($config['COMPROPAGO_MODE']))  ?  $config['COMPROPAGO_MODE'] :false;
-        $this->showLogo     = (isset($config['COMPROPAGO_LOGOS']))  ?  $config['COMPROPAGO_LOGOS'] :true;
+        $this->execMode     = (isset($config['COMPROPAGO_MODE'])) ? $config['COMPROPAGO_MODE'] : false;
+        $this->showLogo     = (isset($config['COMPROPAGO_LOGOS']))  ?  $config['COMPROPAGO_LOGOS'] : true;
         $this->showLogoCp   = (isset($config['COMPROPAGO_CHECKLOGO'])) ? $config['COMPROPAGO_CHECKLOGO'] : true;
-        $this->execMode     = $this->execMode == 1 ? true : false;
         # Most load selected
         $this->stores = explode(',',$config['COMPROPAGO_PROVIDER'] );
         $this->ps_versions_compliancy = array('min' => '1.7.0.0', 'max' => _PS_VERSION_);
-
         $this->bootstrap = true;
         parent::__construct();
 
@@ -88,7 +84,7 @@ class Compropago extends PaymentModule
         
 
         # Validate if exist the public and the private keys
-        if ((!isset($this->publicKey) || !isset($this->privateKey) || empty($this->publicKey) || empty($this->privateKey) ) ){
+        if ((!isset($this->publicKey) || !isset($this->privateKey) || empty($this->publicKey) || empty($this->privateKey))){
             $this->warning = $this->l('The Public Key and Private Key must be configured before using this module.');
         }
 
@@ -99,16 +95,15 @@ class Compropago extends PaymentModule
         if($this->context->employee){
             $itsBE = true;
         }
-
+        
         if($itsBE){
             $hook_data = $this->hookRetro(true, $this->publicKey, $this->privateKey, $this->execMode);
-
             if($hook_data[0]){
                 $this->warning = $this->l($hook_data[1]);
                 $this->stop = $hook_data[2];
             }
         }
-
+        
         if (!count(Currency::checkPaymentCurrencies($this->id))) {
             $this->warning = $this->trans('No currency has been set for this module.', array(), 'Modules.compropago.Admin');
         }
@@ -119,7 +114,6 @@ class Compropago extends PaymentModule
      * @param boolean $moduleLive
      * @return boolean
      */
-
     private function setComproPago($moduleLive)
     {
         try{
@@ -134,7 +128,6 @@ class Compropago extends PaymentModule
     * Install the module configurations
     * @return installation
     */
-
     public function install()
     {
         if (version_compare(phpversion(), '5.5.0', '<')) {
@@ -159,7 +152,6 @@ class Compropago extends PaymentModule
     * Get the providers by default
     * @return array
     */
-
     public function getDefaultProviders()
     {
     
@@ -197,7 +189,6 @@ class Compropago extends PaymentModule
     /**
     * Install the tables to save the ComproPago order
     */
-
     public function installTables()
     {
 
@@ -248,7 +239,6 @@ class Compropago extends PaymentModule
      * Install ComproPago Order Status
      * @return boolean
      */
-
     protected function installOrderStates()
     {
         $valuesInsertPending   = array(
@@ -349,7 +339,6 @@ class Compropago extends PaymentModule
      * Uninstall Module
      * @return boolean
      */
-
     public function uninstall()
     {   
         return Configuration::deleteByName('COMPROPAGO_PUBLICKEY')
@@ -378,14 +367,13 @@ class Compropago extends PaymentModule
      * necesita activarse en getcontent ... Evaluar
      * @return array
      */
-
     public function hookRetro($enabled, $publickey, $privatekey, $live)
-    {   
+    {
         $error = array(false,'','yes');
         if($enabled){
             if(!empty($publickey) && !empty($privatekey) ){
                 try{
-                    $client = new Client($publickey, $privatekey, $live == 1 ? true : false);
+                    $client = new Client($publickey, $privatekey, $live);
                     $compropagoResponse = Validations::evalAuth($client);
                     //eval keys
                     if(!Validations::validateGateway($client)){
@@ -445,7 +433,6 @@ class Compropago extends PaymentModule
     /**
      * Validate module config form
      */
-
     private function _postValidation()
     {
         if (Tools::isSubmit('btnSubmit'))
@@ -461,7 +448,6 @@ class Compropago extends PaymentModule
     /**
      *Refresh configed data after module config updated
      */
-
     private function _postProcess()
     {
         if (Tools::isSubmit('btnSubmit'))
@@ -475,13 +461,13 @@ class Compropago extends PaymentModule
             $prov = implode(',',Tools::getValue('COMPROPAGO_PROVIDERS_selected'));
             Configuration::updateValue('COMPROPAGO_PROVIDER', $prov);
         } 
+        
         if ($this->stop) {
             $publicKey  = Tools::getValue('COMPROPAGO_PUBLICKEY');
             $privateKey = Tools::getValue('COMPROPAGO_PRIVATEKEY');
             $mode       = Tools::getValue('COMPROPAGO_MODE');
 
             $coWebhook = new Client($publicKey, $privateKey, $mode);
-            
             if (isset($coWebhook)) {
                 if (!Tools::getValue('COMPROPAGO_PUBLICKEY') && !Tools::getValue('COMPROPAGO_PRIVATEKEY')) {
                     return false;
@@ -497,9 +483,8 @@ class Compropago extends PaymentModule
                     
                 }
             }
+            $this->_html .= $this->displayError($this->warning);
         }
-
-        $this->_html .= $this->displayError($this->warning);
     }
 
     /**
@@ -514,7 +499,6 @@ class Compropago extends PaymentModule
      * Show Errors & load description, and after submit information at admin configuration page
      * @return mixed
      */
-
     public function getContent()
     {
         $this->_html = '';
@@ -539,7 +523,6 @@ class Compropago extends PaymentModule
     * Check against SDK if module is valid for use
     * @return boolean
     */
-
     public function checkCompropago()
     {
         try {
@@ -554,7 +537,6 @@ class Compropago extends PaymentModule
     * Get the view of options payment
     * @return array()
     */
-
     public function hookPaymentOptions($params)
     {
         if (!empty($this->publicKey) && !empty($this->privateKey)) {
@@ -584,7 +566,6 @@ class Compropago extends PaymentModule
     * Return the payment order
     * @return array()
     */
-
     public function hookPaymentReturn($params)
     {
         if (!$this->active) {
@@ -624,12 +605,10 @@ class Compropago extends PaymentModule
     public function checkCurrency($cart)
     {
         $currency_order = new Currency((int)($cart->id_currency));
-        
         $currencies_module = $this->getCurrency((int)$cart->id_currency);
         if ($currency_order->iso_code=='MXN' || $currency_order->iso_code=='USD' || $currency_order->iso_code=='EUR' || $currency_order->iso_code=='GBP') {
-                    return true;
+            return true;
         }
-        
         return false;
     }
 
@@ -637,7 +616,6 @@ class Compropago extends PaymentModule
     * Back office form
     * @return array() 
     */
-
     public function renderForm()
     {
         $providers = $this->client->api->listDefaultProviders();
@@ -752,7 +730,6 @@ class Compropago extends PaymentModule
                 )
             ),
         );
-
         $helper = new HelperForm();
         $helper->show_toolbar = false;
         $helper->table = $this->table;
@@ -766,11 +743,10 @@ class Compropago extends PaymentModule
         $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false).'&configure='.$this->name.'&tab_module='.$this->tab.'&module_name='.$this->name;
         $helper->token = Tools::getAdminTokenLite('AdminModules');
         $helper->tpl_vars = array(
-            'fields_value' => $this->getConfigFieldsValues(),
-            'languages' => $this->context->controller->getLanguages(),
-            'id_language' => $this->context->language->id
+            'fields_value'  => $this->getConfigFieldsValues(),
+            'languages'     => $this->context->controller->getLanguages(),
+            'id_language'   => $this->context->language->id
         );
-
         return $helper->generateForm(array($fields_form));
     }
 
@@ -778,7 +754,6 @@ class Compropago extends PaymentModule
     * Data to put in the back office
     * @return array 
     */
-
     public function getConfigFieldsValues()
     {
         $prov = explode(',',Configuration::get('COMPROPAGO_PROVIDER') );
@@ -797,7 +772,6 @@ class Compropago extends PaymentModule
     * This method generate the checkout form
     * @return view 
     */
-
     protected function generateForm()
     {   
         global $currency;
@@ -818,7 +792,6 @@ class Compropago extends PaymentModule
         } else {
             $provflag = true;
         }
-        
 
         $this->context->smarty->assign(array(
             'showLogo'  => $this->showLogo,

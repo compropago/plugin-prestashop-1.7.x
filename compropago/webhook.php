@@ -19,21 +19,15 @@
  * @author Rolando Lucio <rolando@compropago.com>
  * @since 2.0.0
  */
-
-
 require_once __DIR__.'/vendor/autoload.php';
 require_once __DIR__.'/../../config/config.inc.php';
 require_once __DIR__.'/../../init.php';
 require_once __DIR__.'/../../classes/PrestaShopLogger.php';
-
 require_once __DIR__.'/../../classes/order/Order.php';
 require_once __DIR__.'/../../classes/order/OrderHistory.php';
-
-
 if (!defined('_PS_VERSION_')){
     die("No se pudo inicializar Prestashop");
 }
-
 use CompropagoSdk\Client;
 use CompropagoSdk\Factory\Factory;
 use CompropagoSdk\Tools\Validations;
@@ -49,30 +43,24 @@ use CompropagoSdk\Tools\Validations;
        "reference" => null
      ]);
  }
-
 $config = Configuration::getMultiple(array('COMPROPAGO_PUBLICKEY', 'COMPROPAGO_PRIVATEKEY','COMPROPAGO_MODE'));
-
 $publickey     = $config['COMPROPAGO_PUBLICKEY'];
 $privatekey    = $config['COMPROPAGO_PRIVATEKEY'];
 $live          = ($config['COMPROPAGO_MODE']==true);
-
  try{
      $client = new Client($publickey, $privatekey, $live);
-
     if($resp_webhook->short_id == "000000"){
-        echo json_encode([
-        "status" => "success",
-        "message" => "test success",
-        "short_id" => $resp_webhook->short_id,
-        "reference" => null
-        ]);
-        die();
-    }
 
+        die(json_encode([
+            "status" => "success",
+            "message" => "test success",
+            "short_id" => $resp_webhook->short_id,
+            "reference" => null
+            ]));
+    }
     if($response->type == 'error'){
         die('Error procesando el numero de orden');
     }
-
     if(
         !Db::getInstance()->execute("SHOW TABLES LIKE '"._DB_PREFIX_ ."compropago_orders'") ||
         !Db::getInstance()->execute("SHOW TABLES LIKE '"._DB_PREFIX_ ."compropago_transactions'")
@@ -81,9 +69,8 @@ $live          = ($config['COMPROPAGO_MODE']==true);
     }
  
     $response = $client->api->verifyOrder($resp_webhook->id);
-
+    
     $sql = "SELECT * FROM "._DB_PREFIX_."compropago_orders  WHERE compropagoId = '".$response->id."' ";
-
     if ($row = Db::getInstance()->getRow($sql)){
      switch ($response->type){
          case 'charge.success':
@@ -103,13 +90,11 @@ $live          = ($config['COMPROPAGO_MODE']==true);
                "reference" => null
              ]);
              }
-
             $id_order   = intval($response->order_info->order_id);
             $recordTime = time();
     
             $order   = new Order($id_order);
             $history = new OrderHistory();
-
             $history->id_order = (int)$order->id;
             $history->changeIdOrderState((int)Configuration::get($nomestatus), (int)($order->id));
     
@@ -136,13 +121,11 @@ $live          = ($config['COMPROPAGO_MODE']==true);
                 'ioOut'                => $ioOut
                 ));
     
-            echo('Orden '.$resp_webhook->id.' Confirmada');
-            
             echo json_encode([
                 "status" => "success",
                 "message" => "OK",
                 "short_id" => $response->short_id,
-                "reference" => 'internal-1234'
+                "reference" => $id_order
             ]);
     
         }else{

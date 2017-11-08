@@ -47,22 +47,39 @@ class Compropago extends PaymentModule
     public $showLogo;
     public $stores;
     public $client;
-    public $geoLocation;
     public $showLogoCp;
     public $extra_mail_vars;
-
+    public $stop = false;
 
     public function __construct()
     {
         $this->name             = 'compropago';
         $this->tab              = 'payments_gateways';
-        $this->version          = '1.0.0';
+        $this->version          = '1.1.0.0';
         $this->author           = 'ComproPago';
         $this->controllers      = array('payment', 'validation');
         $this->currencies       = true;
         $this->currencies_mode  = 'checkbox';
 
-        $config = Configuration::getMultiple(array('COMPROPAGO_PUBLICKEY', 'COMPROPAGO_PRIVATEKEY', 'COMPROPAGO_MODE', 'COMPROPAGO_LOGOS', 'COMPROPAGO_LOCATION', 'COMPROPAGO_CHECKLOGO', 'COMPROPAGO_PROVIDER'));
+        if (Tools::isSubmit('btnSubmit')){
+            $config = [
+                'COMPROPAGO_PUBLICKEY'  => Tools::getValue('COMPROPAGO_PUBLICKEY'), 
+                'COMPROPAGO_PRIVATEKEY' => Tools::getValue('COMPROPAGO_PRIVATEKEY'), 
+                'COMPROPAGO_MODE'       => Tools::getValue('COMPROPAGO_MODE'), 
+                'COMPROPAGO_LOGOS'      => Tools::getValue('COMPROPAGO_LOGOS'), 
+                'COMPROPAGO_CHECKLOGO'  => Tools::getValue('COMPROPAGO_CHECKLOGO'), 
+                'COMPROPAGO_PROVIDER'   => Tools::getValue('COMPROPAGO_PROVIDER')
+            ];
+        } else {
+            $config = Configuration::getMultiple([
+                'COMPROPAGO_PUBLICKEY', 
+                'COMPROPAGO_PRIVATEKEY', 
+                'COMPROPAGO_MODE', 
+                'COMPROPAGO_LOGOS', 
+                'COMPROPAGO_CHECKLOGO', 
+                'COMPROPAGO_PROVIDER'
+            ]);
+        }
 
         if (isset($config['COMPROPAGO_PUBLICKEY'])) {
             $this->publicKey = $config['COMPROPAGO_PUBLICKEY'];
@@ -72,15 +89,12 @@ class Compropago extends PaymentModule
             $this->privateKey = $config['COMPROPAGO_PRIVATEKEY'];
         }
 
-        $this->execMode     = (isset($config['COMPROPAGO_MODE']))  ?  $config['COMPROPAGO_MODE'] :false;
-        $this->showLogo     = (isset($config['COMPROPAGO_LOGOS']))  ?  $config['COMPROPAGO_LOGOS'] :true;
-        $this->geoLocation  = (isset($config['COMPROPAGO_LOCATION']))  ?  $config['COMPROPAGO_LOCATION'] :true;
+        $this->execMode     = (isset($config['COMPROPAGO_MODE'])) ? $config['COMPROPAGO_MODE'] : false;
+        $this->showLogo     = (isset($config['COMPROPAGO_LOGOS']))  ?  $config['COMPROPAGO_LOGOS'] : true;
         $this->showLogoCp   = (isset($config['COMPROPAGO_CHECKLOGO'])) ? $config['COMPROPAGO_CHECKLOGO'] : true;
-
         # Most load selected
-        $this->stores = explode(',',$config['COMPROPAGO_PROVIDER'] );
+        $this->stores = explode(',',$config['COMPROPAGO_PROVIDER']);
         $this->ps_versions_compliancy = array('min' => '1.7.0.0', 'max' => _PS_VERSION_);
-
         $this->bootstrap = true;
         parent::__construct();
 
@@ -90,27 +104,29 @@ class Compropago extends PaymentModule
         
 
         # Validate if exist the public and the private keys
-        if ((!isset($this->publicKey) || !isset($this->privateKey) || empty($this->publicKey) || empty($this->privateKey) ) ){
+        if ((!isset($this->publicKey) || !isset($this->privateKey) || empty($this->publicKey) || empty($this->privateKey))){
             $this->warning = $this->l('The Public Key and Private Key must be configured before using this module.');
         }
 
         $this->setComproPago($this->execMode);
 
-        $itsBE = null;
+        // $itsBE = null;
 
+        // if($this->context->employee){
+        //     $itsBE = true;
+        // }
+        
         if($this->context->employee){
-            $itsBE = true;
-        }
 
-        if($itsBE){
             $hook_data = $this->hookRetro(true, $this->publicKey, $this->privateKey, $this->execMode);
 
             if($hook_data[0]){
+
                 $this->warning = $this->l($hook_data[1]);
                 $this->stop = $hook_data[2];
             }
         }
-
+        
         if (!count(Currency::checkPaymentCurrencies($this->id))) {
             $this->warning = $this->trans('No currency has been set for this module.', array(), 'Modules.compropago.Admin');
         }
@@ -121,7 +137,6 @@ class Compropago extends PaymentModule
      * @param boolean $moduleLive
      * @return boolean
      */
-
     private function setComproPago($moduleLive)
     {
         try{
@@ -136,7 +151,6 @@ class Compropago extends PaymentModule
     * Install the module configurations
     * @return installation
     */
-
     public function install()
     {
         if (version_compare(phpversion(), '5.5.0', '<')) {
@@ -161,13 +175,12 @@ class Compropago extends PaymentModule
     * Get the providers by default
     * @return array
     */
-
     public function getDefaultProviders()
     {
+    
         global $currency;
         $this->client = new Client();
         $providers = $this->client->api->listDefaultProviders();
-
         $options = [];
 
         foreach ($providers as $provider){
@@ -176,7 +189,6 @@ class Compropago extends PaymentModule
         $defaultProvider = implode(",", $options);
         Configuration::updateValue('COMPROPAGO_PROVIDER', $defaultProvider);
         Configuration::updateValue('COMPROPAGO_LOGOS', 1);
-        Configuration::updateValue('COMPROPAGO_LOCATION', 1);
         Configuration::updateValue('COMPROPAGO_CHECKLOGO', 1);
         Configuration::updateValue('COMPROPAGO_WEBHOOK',Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->name.'/webhook.php');
     }
@@ -197,11 +209,9 @@ class Compropago extends PaymentModule
         return true;
     }
 
-
     /**
     * Install the tables to save the ComproPago order
     */
-
     public function installTables()
     {
 
@@ -252,7 +262,6 @@ class Compropago extends PaymentModule
      * Install ComproPago Order Status
      * @return boolean
      */
-
     protected function installOrderStates()
     {
         $valuesInsertPending   = array(
@@ -353,16 +362,13 @@ class Compropago extends PaymentModule
      * Uninstall Module
      * @return boolean
      */
-
     public function uninstall()
-
     {   
         return Configuration::deleteByName('COMPROPAGO_PUBLICKEY')
             && Configuration::deleteByName('COMPROPAGO_PRIVATEKEY')
             && Configuration::deleteByName('COMPROPAGO_MODE')
             && Configuration::deleteByName('COMPROPAGO_WEBHOOK')
             && Configuration::deleteByName('COMPROPAGO_LOGOS')
-            && Configuration::deleteByName('COMPROPAGO_LOCATION')
             && Configuration::deleteByName('COMPROPAGO_CHECKLOGO')
             && Configuration::deleteByName('COMPROPAGO_PROVIDER')
             && Configuration::deleteByName('COMPROPAGO_PENDING')
@@ -379,14 +385,11 @@ class Compropago extends PaymentModule
         Db::getInstance()->execute('DROP TABLE `' . _DB_PREFIX_ . 'compropago_webhook_transactions`;');
     }
 
-    
-
     /**
      * Generacion de retro alimentacion de configuracion al guardar
      * necesita activarse en getcontent ... Evaluar
      * @return array
      */
-
     public function hookRetro($enabled, $publickey, $privatekey, $live)
     {
         $error = array(false,'','yes');
@@ -435,7 +438,6 @@ class Compropago extends PaymentModule
             $error[2] = 'no';
             $error[0] = true;
         }
-
         return $error;
     }
 
@@ -450,17 +452,14 @@ class Compropago extends PaymentModule
         $this->context->controller->addJS($this->_path.'views/assets/js/ps-default.js', 'all');
         $this->context->controller->addJS($this->_path.'views/assets/js/providers.js', 'all');
     }
-
     
     /**
      * Validate module config form
      */
-
     private function _postValidation()
     {
-        if (Tools::isSubmit('btnSubmit'))
-        {
-            if (!Tools::getValue('COMPROPAGO_PUBLICKEY')){
+        if (Tools::isSubmit('btnSubmit')) {
+            if (!Tools::getValue('COMPROPAGO_PUBLICKEY')) {
                 $this->_postErrors[] = $this->l('The Public Key is required');
             }elseif (!Tools::getValue('COMPROPAGO_PRIVATEKEY')){
                 $this->_postErrors[] = $this->l('The Private Key is required');
@@ -471,39 +470,43 @@ class Compropago extends PaymentModule
     /**
      *Refresh configed data after module config updated
      */
-
     private function _postProcess()
     {
-        if (Tools::isSubmit('btnSubmit'))
-        {   
+        if (Tools::isSubmit('btnSubmit')) {   
             Configuration::updateValue('COMPROPAGO_PUBLICKEY', Tools::getValue('COMPROPAGO_PUBLICKEY'));
             Configuration::updateValue('COMPROPAGO_PRIVATEKEY', Tools::getValue('COMPROPAGO_PRIVATEKEY'));
             Configuration::updateValue('COMPROPAGO_WEBHOOK', Tools::getValue('COMPROPAGO_WEBHOOK'));
             Configuration::updateValue('COMPROPAGO_MODE', Tools::getValue('COMPROPAGO_MODE'));
             Configuration::updateValue('COMPROPAGO_LOGOS', Tools::getValue('COMPROPAGO_LOGOS'));
-            Configuration::updateValue('COMPROPAGO_LOCATION', Tools::getValue('COMPROPAGO_LOCATION'));
             Configuration::updateValue('COMPROPAGO_CHECKLOGO', Tools::getValue('COMPROPAGO_CHECKLOGO'));
             $prov = implode(',',Tools::getValue('COMPROPAGO_PROVIDERS_selected'));
-            Configuration::updateValue('COMPROPAGO_PROVIDER',$prov);
-        }
-        if ($this->stop) {
-            $publicKey  = Tools::getValue('COMPROPAGO_PUBLICKEY');
-            $privateKey = Tools::getValue('COMPROPAGO_PRIVATEKEY');
-            $mode       = Tools::getValue('COMPROPAGO_MODE');
+            Configuration::updateValue('COMPROPAGO_PROVIDER', $prov);
+        } 
 
-            $coWebhook = new Client($publicKey, $privateKey, $mode);
-            
-            if (isset($coWebhook)) {
-                if (!Tools::getValue('COMPROPAGO_PUBLICKEY') && !Tools::getValue('COMPROPAGO_PRIVATEKEY')) {
-                    return false;
-                }else{
-                    $coWebhook->api->createWebhook(Tools::getValue('COMPROPAGO_WEBHOOK'));
+        if ($this->stop) {
+            if (!Tools::getValue('COMPROPAGO_PUBLICKEY') && !Tools::getValue('COMPROPAGO_PRIVATEKEY')) {
+                return false;
+            } else {
+                try {
+                    $this->client->api->createWebhook(Tools::getValue('COMPROPAGO_WEBHOOK'));
                     $this->_html .= $this->displayConfirmation($this->l('Opciones actualizadas'));
+                } catch (\Exception $e) {
+                    if ($e->getMessage() != 'Error: conflict.urls.create') {
+                        $this->_html .= $this->displayError($e->getMessage());
+                    }
+                }
+            }
+            $this->_html .= $this->displayError($this->warning);
+        } else {
+            try {
+                $this->client->api->createWebhook(Tools::getValue('COMPROPAGO_WEBHOOK'));
+                $this->_html .= $this->displayConfirmation($this->l('Opciones actualizadas'));
+            } catch (\Exception $e) {
+                if ($e->getMessage() != 'Error: conflict.urls.create') {
+                    $this->_html .= $this->displayError($e->getMessage());
                 }
             }
         }
-
-        $this->_html .= $this->displayError($this->warning);
     }
 
     /**
@@ -518,7 +521,6 @@ class Compropago extends PaymentModule
      * Show Errors & load description, and after submit information at admin configuration page
      * @return mixed
      */
-
     public function getContent()
     {
         $this->_html = '';
@@ -544,7 +546,6 @@ class Compropago extends PaymentModule
     * Check against SDK if module is valid for use
     * @return boolean
     */
-
     public function checkCompropago()
     {
         try {
@@ -559,7 +560,6 @@ class Compropago extends PaymentModule
     * Get the view of options payment
     * @return array()
     */
-
     public function hookPaymentOptions($params)
     {
         if (!empty($this->publicKey) && !empty($this->privateKey)) {
@@ -589,7 +589,6 @@ class Compropago extends PaymentModule
     * Return the payment order
     * @return array()
     */
-
     public function hookPaymentReturn($params)
     {
         if (!$this->active) {
@@ -629,12 +628,10 @@ class Compropago extends PaymentModule
     public function checkCurrency($cart)
     {
         $currency_order = new Currency((int)($cart->id_currency));
-        
         $currencies_module = $this->getCurrency((int)$cart->id_currency);
         if ($currency_order->iso_code=='MXN' || $currency_order->iso_code=='USD' || $currency_order->iso_code=='EUR' || $currency_order->iso_code=='GBP') {
-                    return true;
+            return true;
         }
-        
         return false;
     }
 
@@ -642,10 +639,8 @@ class Compropago extends PaymentModule
     * Back office form
     * @return array() 
     */
-
     public function renderForm()
     {
-
         $providers = $this->client->api->listDefaultProviders();
 
         $options = [];
@@ -740,25 +735,6 @@ class Compropago extends PaymentModule
                         )
                     ),
                     array(
-                        'type'    => 'switch',
-                        'label'   => $this->l('Geolocalización'),
-                        'desc'    => $this->l('Obtiene la ubicación del cliente para mostrar los establecimientos cercanos a el, agiliza las notificaciones de pago y reduce el tiempo de confirmación'),
-                        'name'    => 'COMPROPAGO_LOCATION',
-                        'is_bool' => true,
-                        'values'  => array(
-                            array(
-                                'id'    => 'active_on_lgl',
-                                'value' => true,
-                                'label' => $this->l('Mostrar Logos')
-                            ),
-                            array(
-                                'id'    => 'active_off_lgl',
-                                'value' => false,
-                                'label' => $this->l('Mostrar Select')
-                            )
-                        )
-                    ),
-                    array(
                         'type'     => 'swap',
                         'multiple' => true,
                         'label'    => $this->l('Tiendas'),
@@ -777,7 +753,6 @@ class Compropago extends PaymentModule
                 )
             ),
         );
-
         $helper = new HelperForm();
         $helper->show_toolbar = false;
         $helper->table = $this->table;
@@ -791,11 +766,10 @@ class Compropago extends PaymentModule
         $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false).'&configure='.$this->name.'&tab_module='.$this->tab.'&module_name='.$this->name;
         $helper->token = Tools::getAdminTokenLite('AdminModules');
         $helper->tpl_vars = array(
-            'fields_value' => $this->getConfigFieldsValues(),
-            'languages' => $this->context->controller->getLanguages(),
-            'id_language' => $this->context->language->id
+            'fields_value'  => $this->getConfigFieldsValues(),
+            'languages'     => $this->context->controller->getLanguages(),
+            'id_language'   => $this->context->language->id
         );
-
         return $helper->generateForm(array($fields_form));
     }
 
@@ -803,7 +777,6 @@ class Compropago extends PaymentModule
     * Data to put in the back office
     * @return array 
     */
-
     public function getConfigFieldsValues()
     {
         $prov = explode(',',Configuration::get('COMPROPAGO_PROVIDER') );
@@ -812,7 +785,6 @@ class Compropago extends PaymentModule
             'COMPROPAGO_PRIVATEKEY' => Tools::getValue('COMPROPAGO_PRIVATEKEY', Configuration::get('COMPROPAGO_PRIVATEKEY')),
             'COMPROPAGO_MODE'       => Tools::getValue('COMPROPAGO_MODE', Configuration::get('COMPROPAGO_MODE')),
             'COMPROPAGO_LOGOS'      => Tools::getValue('COMPROPAGO_LOGOS', Configuration::get('COMPROPAGO_LOGOS')),
-            'COMPROPAGO_LOCATION'   => Tools::getValue('COMPROPAGO_LOCATION', Configuration::get('COMPROPAGO_LOCATION')),
             'COMPROPAGO_CHECKLOGO'  => Tools::getValue('COMPROPAGO_CHECKLOGO', Configuration::get('COMPROPAGO_CHECKLOGO')),
             'COMPROPAGO_WEBHOOK'    => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->name.'/webhook.php',
             'COMPROPAGO_PROVIDERS'  => Tools::getValue('COMPROPAGO_PROVIDERS_selected', $prov),
@@ -823,7 +795,6 @@ class Compropago extends PaymentModule
     * This method generate the checkout form
     * @return view 
     */
-
     protected function generateForm()
     {   
         global $currency;
@@ -844,14 +815,12 @@ class Compropago extends PaymentModule
         } else {
             $provflag = true;
         }
-        
 
         $this->context->smarty->assign(array(
             'showLogo'  => $this->showLogo,
             'action'    => $this->context->link->getModuleLink($this->name, 'validation', array(), true),
             'providers' => $f_providers,
             'flag'      => $provflag,
-            'location'  => $this->geoLocation
         ));
         return $this->display(__FILE__, './views/templates/hook/payment_form.tpl');
     }

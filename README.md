@@ -2,7 +2,7 @@
 Plugin para PrestaShop ( 1.7.0.x + ) 
 =================================================
 
-*Nota.-Este plugin sólo funcionará con cuentas de ComproPago generadas a partir de Agosto del 2017. Si tienes una cuenta creada anterior a esta fecha por favor utilizar la versión 2.2.2.3 del plugin.**
+*Nota.-Este plugin sólo funcionará con cuentas de ComproPago generadas a partir de Agosto del 2017. Si tienes una cuenta creada anterior a esta fecha por favor utilizar la versión 1.0.1.1 del plugin.**
 
 ## Descripción
 Este módulo permite la integración del servicio de ComproPago en tu eCommerce de PrestaShop. 

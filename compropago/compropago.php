@@ -482,31 +482,30 @@ class Compropago extends PaymentModule
             $prov = implode(',',Tools::getValue('COMPROPAGO_PROVIDERS_selected'));
             Configuration::updateValue('COMPROPAGO_PROVIDER', $prov);
         } 
-        
+
         if ($this->stop) {
-            $publicKey  = Tools::getValue('COMPROPAGO_PUBLICKEY');
-            $privateKey = Tools::getValue('COMPROPAGO_PRIVATEKEY');
-            $mode       = Tools::getValue('COMPROPAGO_MODE');
-
-            //$coWebhook = new Client($publicKey, $privateKey, $mode);
-            
-            //if (isset($coWebhook)) {
-                if (!Tools::getValue('COMPROPAGO_PUBLICKEY') && !Tools::getValue('COMPROPAGO_PRIVATEKEY')) {
-                    return false;
-                } else {
-                    try {
-                        $this->client->api->createWebhook(Tools::getValue('COMPROPAGO_WEBHOOK'));
-                        $this->_html .= $this->displayConfirmation($this->l('Opciones actualizadas'));
-                    } catch (\Exception $e) {
-                        if ($e->getMessage() != 'Error: conflict.urls.create') {
-                            $this->_html .= $this->displayError($e->getMessage());
-                        }
+            if (!Tools::getValue('COMPROPAGO_PUBLICKEY') && !Tools::getValue('COMPROPAGO_PRIVATEKEY')) {
+                return false;
+            } else {
+                try {
+                    $this->client->api->createWebhook(Tools::getValue('COMPROPAGO_WEBHOOK'));
+                    $this->_html .= $this->displayConfirmation($this->l('Opciones actualizadas'));
+                } catch (\Exception $e) {
+                    if ($e->getMessage() != 'Error: conflict.urls.create') {
+                        $this->_html .= $this->displayError($e->getMessage());
                     }
-                    
                 }
-            //}
-
+            }
             $this->_html .= $this->displayError($this->warning);
+        } else {
+            try {
+                $this->client->api->createWebhook(Tools::getValue('COMPROPAGO_WEBHOOK'));
+                $this->_html .= $this->displayConfirmation($this->l('Opciones actualizadas'));
+            } catch (\Exception $e) {
+                if ($e->getMessage() != 'Error: conflict.urls.create') {
+                    $this->_html .= $this->displayError($e->getMessage());
+                }
+            }
         }
     }
 

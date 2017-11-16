@@ -52,7 +52,7 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
         if (!$authorized) {
             die($this->module->l('This payment method is not available.', 'validation'));
         }
-        var_dump("Entre");
+        
         $customer = new Customer($cart->id_customer);
         $address = new Address($cart->id_address_invoice);
 

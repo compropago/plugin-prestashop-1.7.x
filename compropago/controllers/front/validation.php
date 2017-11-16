@@ -52,7 +52,7 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
         if (!$authorized) {
             die($this->module->l('This payment method is not available.', 'validation'));
         }
-
+        var_dump("Entre");
         $customer = new Customer($cart->id_customer);
         $address = new Address($cart->id_address_invoice);
 
@@ -86,14 +86,10 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
                     'currency'           => $currency->iso_code,
                     'image_url'          => null,
                     'app_client_name'    => 'prestashop',
-                    'app_client_version' => _PS_VERSION_,
-                    'latitude'           => $compropagoLatitude,
-                    'longitude'          => $compropagoLongitude,
-                    'cp'                 => $address->postcode
+                    'app_client_version' => _PS_VERSION_
                     ];
 
-        $order = Factory::getInstanceOf('PlaceOrderInfo', $order_info);
-
+        $order = Factory::getInstanceOf('PlaceOrderInfo', $order_info); 
 
         try {
             $response = $this->module->client->api->placeOrder($order);

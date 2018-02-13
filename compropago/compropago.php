@@ -55,7 +55,7 @@ class Compropago extends PaymentModule
     {
         $this->name             = 'compropago';
         $this->tab              = 'payments_gateways';
-        $this->version          = '1.1.0.0';
+        $this->version          = '2.1.0';
         $this->author           = 'ComproPago';
         $this->controllers      = array('payment', 'validation');
         $this->currencies       = true;
@@ -225,6 +225,7 @@ class Compropago extends PaymentModule
             `date` int(11) NOT NULL,
             `modified` int(11) NOT NULL,
             `compropagoId` varchar(50) NOT NULL,
+            `compropagoShortId` varchar(50) NOT NULL,
             `compropagoStatus`varchar(50) NOT NULL,
             `storeCartId` varchar(255) NOT NULL,
             `storeOrderId` varchar(255) NOT NULL,
@@ -238,6 +239,7 @@ class Compropago extends PaymentModule
             'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'compropago_transactions` (
             `id` int(11) NOT NULL AUTO_INCREMENT,
             `orderId` int(11) NOT NULL,
+            `shortId` varchar(10) NOT NULL,
             `date` int(11) NOT NULL,
             `compropagoId` varchar(50) NOT NULL,
             `compropagoStatus` varchar(50) NOT NULL,
@@ -396,7 +398,7 @@ class Compropago extends PaymentModule
         if($enabled){
             if(!empty($publickey) && !empty($privatekey) ){
                 try{
-                    $client = new Client($publickey, $privatekey, $live);
+                    $client = new Client("pk_test_63424937394441623d","sk_test_7f97d50374104d0af5", false);
                     $compropagoResponse = Validations::evalAuth($client);
                     //eval keys
                     if(!Validations::validateGateway($client)){

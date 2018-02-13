@@ -53,7 +53,7 @@ $live          = ($config['COMPROPAGO_MODE']==true);
 
         die(json_encode([
             "status" => "success",
-            "message" => "test success",
+            "message" => "response_test_success(".$resp_webhook->short_id.")",
             "short_id" => $resp_webhook->short_id,
             "reference" => null
             ]));
@@ -70,8 +70,10 @@ $live          = ($config['COMPROPAGO_MODE']==true);
  
     $response = $client->api->verifyOrder($resp_webhook->id);
     
-    $sql = "SELECT * FROM "._DB_PREFIX_."compropago_orders  WHERE compropagoId = '".$response->id."' ";
+    $sql = "SELECT * FROM "._DB_PREFIX_."compropago_orders  WHERE compropagoId = '".$response->id."' AND compropagoShortId = '".$response->short_id."'";
+    
     if ($row = Db::getInstance()->getRow($sql)){
+        
      switch ($response->type){
          case 'charge.success':
             $nomestatus = "COMPROPAGO_SUCCESS";
@@ -107,10 +109,10 @@ $live          = ($config['COMPROPAGO_MODE']==true);
             if(!Db::getInstance()->execute($sql)){
                 die("Error Updating ComproPago Order Record at Store");
             }
-    
+
             $ioIn  = base64_encode(serialize($resp_webhook));
             $ioOut = base64_encode(serialize($response));
-    
+
             Db::getInstance()->insert('compropago_transactions', array(
                 'orderId'              => $row['id'],
                 'date'                 => $recordTime,
@@ -120,14 +122,14 @@ $live          = ($config['COMPROPAGO_MODE']==true);
                 'ioIn'                 => $ioIn,
                 'ioOut'                => $ioOut
                 ));
-    
+
             echo json_encode([
                 "status" => "success",
-                "message" => "OK",
+                "message" => "response_success(".$response->short_id.")",
                 "short_id" => $response->short_id,
                 "reference" => $id_order
             ]);
-    
+
         }else{
             die('El número de orden no se encontro en la tienda');
         }

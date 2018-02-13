@@ -29,7 +29,7 @@ class Client
      *
      * @author Eduardo Aguilar <dante.aguilar41@gmail.com>
      */
-    public function __construct($publickey, $privatekey, $live)
+    public function __construct($publickey="", $privatekey="", $live="")
     {
         $this->publickey = $publickey;
         $this->privatekey = $privatekey;

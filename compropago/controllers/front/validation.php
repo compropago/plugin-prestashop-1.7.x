@@ -116,6 +116,7 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
                 'date'             => $recordTime,
                 'modified'         => $recordTime,
                 'compropagoId'     => $response->id,
+                'compropagoShortId'=> $response->short_id,
                 'compropagoStatus' => $response->type,
                 'storeCartId'      => $cart->id,
                 'storeOrderId'     => $this->module->currentOrder,
@@ -126,6 +127,7 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
 
             Db::getInstance()->insert('compropago_transactions', array(
                 'orderId'              => $response->order_info->order_id,
+                'compropago'           => $response->short_id,
                 'date'                 => $recordTime,
                 'compropagoId'         => $response->id,
                 'compropagoStatus'     => $response->type,

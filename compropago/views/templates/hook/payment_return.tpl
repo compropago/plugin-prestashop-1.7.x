@@ -24,8 +24,9 @@
 *}
 
 {if $status == 'ok'}
+
 	<div class="compropagoDivFrame" id="compropagodContainer" style="width: 100%;">
-    <iframe style="width: 100%;"
+    <iframe style="width: 100%; height:937px"
         id="compropagodFrame"
         src="https://compropago.com/comprobante?confirmation_id={$order_id_co}"
         frameborder="0"
@@ -44,7 +45,7 @@
             iframe.style.height=height + 'px';
         }
     }
-    window.onload = function(event) {
+    window.onload = function() {
         resizeIframe();
     };
     window.onresize = function(event) {

@@ -25,7 +25,7 @@
 
 <div class="alert alert-info">
 <img src="../modules/compropago/logo-desc.png" style="float:left; margin-right:15px;" >
-<p><strong>{l s="Este módulo te permite aceptar pagos por tiendas OXXO, 7Eleven y más..." d='Modules.Compropago.Admin'}</strong></p>
+<p><strong>{l s="Este módulo te permite aceptar pagos en efectivo en todo México" d='Modules.Compropago.Admin'}</strong></p>
 <p{l s="" s="Modules.Compropago.Admin"}>Elije en que tiendas quieres que paguen</p>
 <p></p>
 </div>

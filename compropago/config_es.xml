@@ -2,8 +2,8 @@
 <module>
     <name>compropago</name>
     <displayName><![CDATA[ComproPago]]></displayName>
-    <version><![CDATA[1.1.0.0]]></version>
-    <description><![CDATA[Este m&oacute;dulo te permite aceptar pagos en M&eacute;xico en tiendas OXXO, 7Eleven y m&aacute;s.]]></description>
+    <version><![CDATA[2.1.1]]></version>
+    <description><![CDATA[Este m&oacute;dulo te permite aceptar pagos en efectivo en M&eacute;xico.]]></description>
     <author><![CDATA[ComproPago]]></author>
     <tab><![CDATA[payments_gateways]]></tab>
 	<confirmUninstall><![CDATA[Estás seguro de que quieres desinstalar el plugin?]]></confirmUninstall>

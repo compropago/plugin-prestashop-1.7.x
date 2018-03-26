@@ -55,7 +55,7 @@ class Compropago extends PaymentModule
     {
         $this->name             = 'compropago';
         $this->tab              = 'payments_gateways';
-        $this->version          = '2.1.0';
+        $this->version          = '2.1.1';
         $this->author           = 'ComproPago';
         $this->controllers      = array('payment', 'validation');
         $this->currencies       = true;
@@ -99,7 +99,7 @@ class Compropago extends PaymentModule
         parent::__construct();
 
         $this->displayName      = $this->l('ComproPago', array(), 'Modules.compropago.Admin');
-        $this->description      = $this->l('Este módulo te permite aceptar pagos en México en tiendas OXXO, 7Eleven y más.', array(), 'Modules.compropago.Admin');
+        $this->description      = $this->l('Este módulo te permite aceptar pagos en efectivo en México.', array(), 'Modules.compropago.Admin');
         $this->confirmUninstall = $this->l('Estás seguro de que quieres desinstalar el plugin?', array(), 'Modules.compropago.Admin');
         
 
@@ -188,7 +188,7 @@ class Compropago extends PaymentModule
         }
         $defaultProvider = implode(",", $options);
         Configuration::updateValue('COMPROPAGO_PROVIDER', $defaultProvider);
-        Configuration::updateValue('COMPROPAGO_LOGOS', 1);
+        Configuration::updateValue('COMPROPAGO_LOGOS', 0);
         Configuration::updateValue('COMPROPAGO_CHECKLOGO', 1);
         Configuration::updateValue('COMPROPAGO_WEBHOOK',Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->name.'/webhook.php');
     }
@@ -556,7 +556,39 @@ class Compropago extends PaymentModule
             return true;
         }
     }
+    
+    /**
+    * Render Cash payment method
+    * @return boolean
+    */
+    public function getPaymentCash()
+    {
+       $newOption = new PaymentOption();
+            $newOption->setCallToActionText($this->l("Pago en efectivo - ", array(), "Modules.compropago.Admin"))
+            ->setLogo(Media::getMediaPath(_PS_MODULE_DIR_.$this->name.'/cp-logo-25.png'))
+                
+                ->setForm($this->generateForm());
+            return $newOption;
+    }
 
+    /**
+    * Render Spei payment method
+    * @return boolean
+    */
+    // public function getPaymentSpei()
+    // {
+    //    $newOption = new PaymentOption();
+    //         $newOption->setLogo(Media::getMediaPath(_PS_MODULE_DIR_.$this->name.'/cp-logo-40.jpg'), "style='background:#3e3d40'")
+    //                 ->setInputs([
+    //                         'token' => [
+    //                             'name' =>'token',
+    //                             'type' =>'hidden',
+    //                             'value' =>'12345689',
+    //                         ],
+    //                     ])
+    //             ->setCallToActionText($this->l("Pago por SPEI -", array(), "Modules.compropago.Admin"));
+    //         return $newOption;
+    // }
 
     /**
     * Get the view of options payment
@@ -572,18 +604,12 @@ class Compropago extends PaymentModule
             if (!$this->checkCurrency($params['cart'])) {
                 return;
             }
-            $newOption = new PaymentOption();
+              $payment_options = [
+            $this->getPaymentCash(),
+            //$this->getPaymentSpei()
 
-            if (!$this->showLogoCp == true) {
-                $newOption->setCallToActionText($this->l("ComproPago", array(), "Modules.compropago.Admin"))
-                    ->setForm($this->generateForm());
-                return [$newOption];
-            }else{
-                $newOption->setAction($this->context->link->getModuleLink($this->name, 'validation', array(), true))
-                    ->setForm($this->generateForm())
-                    ->setLogo(Media::getMediaPath(_PS_MODULE_DIR_.$this->name.'/cp-logo-40.jpg'));
-                return [$newOption];
-            }
+        ];
+        return $payment_options;
         }
     }   
 
@@ -695,44 +721,6 @@ class Compropago extends PaymentModule
                                 'id'    => 'active_off_bv',
                                 'value' => false,
                                 'label' => $this->l('Modo Pruebas')
-                            )
-                        )
-                    ),
-                    array(
-                        'type'    => 'switch',
-                        'label'   => $this->l('Logo'),
-                        'desc'    => $this->l('Esta opción te permite mostrar el logo de Compro Pago en el checkout.'),
-                        'name'    => 'COMPROPAGO_CHECKLOGO',
-                        'is_bool' => true,
-                        'values'  => array(
-                            array(
-                                'id'    => 'active_on_ls',
-                                'value' => true,
-                                'label' => $this->l('YES')
-                            ),
-                            array(
-                                'id'    => 'active_off_ls',
-                                'value' => false,
-                                'label' => $this->l('NO')
-                            )
-                        )
-                    ),
-                    array(
-                        'type'    => 'switch',
-                        'label'   => $this->l('Mostrar tiendas'),
-                        'desc'    => $this->l('Quieres mostrar las imagenes de las tiendas o una lista?'),
-                        'name'    => 'COMPROPAGO_LOGOS',
-                        'is_bool' => true,
-                        'values'  => array(
-                            array(
-                                'id'    => 'active_on_lg',
-                                'value' => true,
-                                'label' => $this->l('Mostrar Logos')
-                            ),
-                            array(
-                                'id'    => 'active_off_lg',
-                                'value' => false,
-                                'label' => $this->l('Mostrar Select')
                             )
                         )
                     ),

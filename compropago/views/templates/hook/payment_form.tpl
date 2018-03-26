@@ -37,32 +37,18 @@
 
 <div class="cprow">
     <div class="cpcolumn">
-        <h1>{l s="Tiendas disponibles." d='Modules.Compropago.Shop'}</h1>
-        <p>{l s="Antes de finalizar seleccione la tienda de su preferencia." d='Modules.Compropago.Shop'}</p>
+    <br>
+        <h4>{l s="¿Dónde quieres pagar?<sup>*</sup>" d='Modules.Compropago.Shop'}</h4>
     </div>
 </div>
 
 {/if}
 
-{$locationes}
+
 <form action="{$action}" id="payment-form" method="POST">
   <div class="cprow">
         <div class="cpcolumn">
-            {if $showLogo == 1}
-
-                <ul class="providers_list">
-                    {foreach $providers as $provider}
-                        <li>
-                            <input name="compropagoProvider" id="compropago_{$provider->internal_name}" type="radio" value="{$provider->internal_name}">
-                            <label class="compropago-provider" for="compropago_{$provider->internal_name}">
-                                <img src="{$provider->image_medium}" alt="{$provider->name}">
-                            </label>
-                        </li>
-                    {/foreach}
-                </ul>
-                
-
-            {else}
+            
 
                 <div id="cppayment_store">
                     <select name="compropagoProvider" class="providers_list">
@@ -71,8 +57,11 @@
                         {/foreach}
                     </select>
                 </div>
-
-            {/if}
+                <div class="cppayment_text">
+                <br>
+                    <p style="font-size:12px; color: #8f8f8f"><sup>*</sup>Comisionistas <a href="#" style="font-size:12px; color: #8f8f8f; font-weight:bold">autorizados por la CNBV</a> como corresponsales bancarios.</p>
+                </div> 
+            
         </div>
     </div>
 </form>

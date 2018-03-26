@@ -398,7 +398,7 @@ class Compropago extends PaymentModule
         if($enabled){
             if(!empty($publickey) && !empty($privatekey) ){
                 try{
-                    $client = new Client("pk_test_63424937394441623d","sk_test_7f97d50374104d0af5", false);
+                    $client = new Client($publickey, $privatekey, $live);
                     $compropagoResponse = Validations::evalAuth($client);
                     //eval keys
                     if(!Validations::validateGateway($client)){

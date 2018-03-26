@@ -59,7 +59,7 @@
                 </div>
                 <div class="cppayment_text">
                 <br>
-                    <p style="font-size:12px; color: #8f8f8f"><sup>*</sup>Comisionistas <a href="#" style="font-size:12px; color: #8f8f8f; font-weight:bold">autorizados por la CNBV</a> como corresponsales bancarios.</p>
+                    <p style="font-size:12px; color: #8f8f8f"><sup>*</sup>Comisionistas <a href="https://compropago.com/legal/corresponsales_cnbv.pdf" target="_blank" style="font-size:12px; color: #8f8f8f; font-weight:bold">autorizados por la CNBV</a> como corresponsales bancarios.</p>
                 </div> 
             
         </div>

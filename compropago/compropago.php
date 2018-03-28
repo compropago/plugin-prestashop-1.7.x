@@ -682,8 +682,8 @@ class Compropago extends PaymentModule
             $fields_form = array(
                 'form' => array(
                     'legend' => array(
-                        'title' => $this->l(' - Configuración'),
-                        'image' => '../modules/compropago/cp-logo-25.png'
+                        'title' => $this->l(' Configuración'),
+                        'image' => '../modules/compropago/icon.png'
                     ),
                     'input' => array(
                         array(

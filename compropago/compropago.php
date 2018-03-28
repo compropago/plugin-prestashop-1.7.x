@@ -44,10 +44,8 @@ class Compropago extends PaymentModule
     public $publicKey;
     public $privateKey;
     public $execMode;
-    public $showLogo;
     public $stores;
     public $client;
-    public $showLogoCp;
     public $extra_mail_vars;
     public $stop = false;
 
@@ -66,8 +64,6 @@ class Compropago extends PaymentModule
                 'COMPROPAGO_PUBLICKEY'  => Tools::getValue('COMPROPAGO_PUBLICKEY'), 
                 'COMPROPAGO_PRIVATEKEY' => Tools::getValue('COMPROPAGO_PRIVATEKEY'), 
                 'COMPROPAGO_MODE'       => Tools::getValue('COMPROPAGO_MODE'), 
-                'COMPROPAGO_LOGOS'      => Tools::getValue('COMPROPAGO_LOGOS'), 
-                'COMPROPAGO_CHECKLOGO'  => Tools::getValue('COMPROPAGO_CHECKLOGO'), 
                 'COMPROPAGO_PROVIDER'   => Tools::getValue('COMPROPAGO_PROVIDER')
             ];
         } else {
@@ -75,8 +71,6 @@ class Compropago extends PaymentModule
                 'COMPROPAGO_PUBLICKEY', 
                 'COMPROPAGO_PRIVATEKEY', 
                 'COMPROPAGO_MODE', 
-                'COMPROPAGO_LOGOS', 
-                'COMPROPAGO_CHECKLOGO', 
                 'COMPROPAGO_PROVIDER'
             ]);
         }
@@ -90,8 +84,6 @@ class Compropago extends PaymentModule
         }
 
         $this->execMode     = (isset($config['COMPROPAGO_MODE'])) ? $config['COMPROPAGO_MODE'] : false;
-        $this->showLogo     = (isset($config['COMPROPAGO_LOGOS']))  ?  $config['COMPROPAGO_LOGOS'] : true;
-        $this->showLogoCp   = (isset($config['COMPROPAGO_CHECKLOGO'])) ? $config['COMPROPAGO_CHECKLOGO'] : true;
         # Most load selected
         $this->stores = explode(',',$config['COMPROPAGO_PROVIDER']);
         $this->ps_versions_compliancy = array('min' => '1.7.0.0', 'max' => _PS_VERSION_);
@@ -199,14 +191,12 @@ class Compropago extends PaymentModule
      * @since 2.0.0
      */
     public function verifyTables()
-    {
-        if(!Db::getInstance()->execute("SHOW TABLES LIKE '"._DB_PREFIX_ ."compropago_orders'") 
-            || !Db::getInstance()->execute("SHOW TABLES LIKE '"._DB_PREFIX_ ."compropago_transactions'"))
+    {   
+        if(!Db::getInstance()->execute("SHOW TABLES LIKE '"._DB_PREFIX_ ."compropago_orders'") || !Db::getInstance()->execute("SHOW TABLES LIKE '"._DB_PREFIX_ ."compropago_transactions'"))
         {
             return false;
         }
-
-        return true;
+    return true;    
     }
 
     /**
@@ -214,7 +204,6 @@ class Compropago extends PaymentModule
     */
     public function installTables()
     {
-
         Db::getInstance()->execute('DROP TABLE IF EXISTS `' . _DB_PREFIX_ . 'compropago_orders`;');
         Db::getInstance()->execute('DROP TABLE IF EXISTS `' . _DB_PREFIX_ . 'compropago_transactions`;');
         Db::getInstance()->execute('DROP TABLE IF EXISTS `' . _DB_PREFIX_ . 'compropago_webhook_transactions`;');
@@ -669,98 +658,111 @@ class Compropago extends PaymentModule
     */
     public function renderForm()
     {
-        $providers = $this->client->api->listDefaultProviders();
+        try{
+            if (Configuration::get('COMPROPAGO_SUCCESS') == false 
+                || Configuration::get('COMPROPAGO_PENDING') == false 
+                || Configuration::get('COMPROPAGO_EXPIRED') == false)
+            {
+                $this->installOrderStates();
+            }
+            if (!$this->verifyTables()){
+                $this->installTables();
+            }
+            
+            $providers = $this->client->api->listDefaultProviders();
+            $options = [];
 
-        $options = [];
-
-        foreach ($providers as $provider){
-            $options[] = [
-                'id_option' => $provider->internal_name,
-                'name'      => $provider->name
-            ];
-        }
-        
-        $fields_form = array(
-            'form' => array(
-                'legend' => array(
-                    'title' => $this->l('ComproPago details'),
-                    'image' => '../modules/compropago/icono.png'
-                ),
-                'input' => array(
-                    array(
-                        'type'     => 'text',
-                        'label'    => $this->l('Llave Pública'),
-                        'name'     => 'COMPROPAGO_PUBLICKEY',
-                        'required' => true
+            foreach ($providers as $provider){
+                $options[] = [
+                    'id_option' => $provider->internal_name,
+                    'name'      => $provider->name
+                ];
+            }
+            
+            $fields_form = array(
+                'form' => array(
+                    'legend' => array(
+                        'title' => $this->l(' Configuración'),
+                        'image' => '../modules/compropago/icon.png'
                     ),
-                    array(
-                        'type'     => 'hidden',
-                        'name'     => 'COMPROPAGO_WEBHOOK',
-                        'required' => false
-                    ),
-                    array(
-                        'type'     => 'text',
-                        'label'    => $this->l('Llave Privada'),
-                        'name'     => 'COMPROPAGO_PRIVATEKEY',
-                        'required' => true
-                    ),
-                    array(
-                        'type'     => 'switch',
-                        'label'    => $this->l('Live Mode'),
-                        'desc'     => $this->l('Estas en modo activo o en pruebas?, Cambia tus llaves de acuerdo al modo').':<a href="https://compropago.com/panel/configuracion" target="_blank">'.$this->l('Panel ComproPago').'</a>.',
-                        'name'     => 'COMPROPAGO_MODE',
-                        'is_bool'  => true,
-                        'required' => true,
-                        'values'   => array(
-                            array(
-                                'id'    => 'active_on_bv',
-                                'value' => true,
-                                'label' => $this->l('Modo Activo')
-                            ),
-                            array(
-                                'id'    => 'active_off_bv',
-                                'value' => false,
-                                'label' => $this->l('Modo Pruebas')
+                    'input' => array(
+                        array(
+                            'type'     => 'text',
+                            'label'    => $this->l('Llave Pública'),
+                            'name'     => 'COMPROPAGO_PUBLICKEY',
+                            'required' => true
+                        ),
+                        array(
+                            'type'     => 'hidden',
+                            'name'     => 'COMPROPAGO_WEBHOOK',
+                            'required' => false
+                        ),
+                        array(
+                            'type'     => 'text',
+                            'label'    => $this->l('Llave Privada'),
+                            'name'     => 'COMPROPAGO_PRIVATEKEY',
+                            'required' => true
+                        ),
+                        array(
+                            'type'     => 'switch',
+                            'label'    => $this->l('Live Mode'),
+                            'desc'     => $this->l('Estas en modo activo o en pruebas?, Cambia tus llaves de acuerdo al modo').':<a href="https://compropago.com/panel/configuracion" target="_blank">'.$this->l('Panel ComproPago').'</a>.',
+                            'name'     => 'COMPROPAGO_MODE',
+                            'is_bool'  => true,
+                            'required' => true,
+                            'values'   => array(
+                                array(
+                                    'id'    => 'active_on_bv',
+                                    'value' => true,
+                                    'label' => $this->l('Modo Activo')
+                                ),
+                                array(
+                                    'id'    => 'active_off_bv',
+                                    'value' => false,
+                                    'label' => $this->l('Modo Pruebas')
+                                )
                             )
-                        )
+                        ),
+                        array(
+                            'type'     => 'swap',
+                            'multiple' => true,
+                            'label'    => $this->l('Tiendas'),
+                            'desc'     => $this->l('Selecciona las tiendas que quieres mostrar'),
+                            'name'     => 'COMPROPAGO_PROVIDERS',
+                            'options'  => array(
+                                'query' => $options, 
+                                'id'    => 'id_option', 
+                                'name'  => 'name'
+                            )
+                        ),
+                        ///END OF FIELDS
                     ),
-                    array(
-                        'type'     => 'swap',
-                        'multiple' => true,
-                        'label'    => $this->l('Tiendas'),
-                        'desc'     => $this->l('Selecciona las tiendas que quieres mostrar'),
-                        'name'     => 'COMPROPAGO_PROVIDERS',
-                        'options'  => array(
-                            'query' => $options, 
-                            'id'    => 'id_option', 
-                            'name'  => 'name'
-                        )
-                    ),
-                    ///END OF FIELDS
+                    'submit' => array(
+                        'title' => $this->l('Save'),
+                    )
                 ),
-                'submit' => array(
-                    'title' => $this->l('Save'),
-                )
-            ),
-        );
-        $helper = new HelperForm();
-        $helper->show_toolbar = false;
-        $helper->table = $this->table;
-        $lang = new Language((int)Configuration::get('PS_LANG_DEFAULT'));
-        $helper->default_form_language = $lang->id;
-        $helper->allow_employee_form_lang = Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') ? Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') : 0;
-        $this->fields_form = array();
-        $helper->id = (int)Tools::getValue('id_carrier');
-        $helper->identifier = $this->identifier;
-        $helper->submit_action = 'btnSubmit';
-        $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false).'&configure='.$this->name.'&tab_module='.$this->tab.'&module_name='.$this->name;
-        $helper->token = Tools::getAdminTokenLite('AdminModules');
-        $helper->tpl_vars = array(
-            'fields_value'  => $this->getConfigFieldsValues(),
-            'languages'     => $this->context->controller->getLanguages(),
-            'id_language'   => $this->context->language->id
-        );
-        return $helper->generateForm(array($fields_form));
+            );
+            $helper = new HelperForm();
+            $helper->show_toolbar = false;
+            $helper->table = $this->table;
+            $lang = new Language((int)Configuration::get('PS_LANG_DEFAULT'));
+            $helper->default_form_language = $lang->id;
+            $helper->allow_employee_form_lang = Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') ? Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') : 0;
+            $this->fields_form = array();
+            $helper->id = (int)Tools::getValue('id_carrier');
+            $helper->identifier = $this->identifier;
+            $helper->submit_action = 'btnSubmit';
+            $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false).'&configure='.$this->name.'&tab_module='.$this->tab.'&module_name='.$this->name;
+            $helper->token = Tools::getAdminTokenLite('AdminModules');
+            $helper->tpl_vars = array(
+                'fields_value'  => $this->getConfigFieldsValues(),
+                'languages'     => $this->context->controller->getLanguages(),
+                'id_language'   => $this->context->language->id
+            );
+            return $helper->generateForm(array($fields_form));
+        } catch (\Exception $e) {
+            die("Error al crear el formulario: " . $e->message);
+        }
     }
 
     /**
@@ -774,8 +776,6 @@ class Compropago extends PaymentModule
             'COMPROPAGO_PUBLICKEY'  => Tools::getValue('COMPROPAGO_PUBLICKEY', Configuration::get('COMPROPAGO_PUBLICKEY')),
             'COMPROPAGO_PRIVATEKEY' => Tools::getValue('COMPROPAGO_PRIVATEKEY', Configuration::get('COMPROPAGO_PRIVATEKEY')),
             'COMPROPAGO_MODE'       => Tools::getValue('COMPROPAGO_MODE', Configuration::get('COMPROPAGO_MODE')),
-            'COMPROPAGO_LOGOS'      => Tools::getValue('COMPROPAGO_LOGOS', Configuration::get('COMPROPAGO_LOGOS')),
-            'COMPROPAGO_CHECKLOGO'  => Tools::getValue('COMPROPAGO_CHECKLOGO', Configuration::get('COMPROPAGO_CHECKLOGO')),
             'COMPROPAGO_WEBHOOK'    => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->name.'/webhook.php',
             'COMPROPAGO_PROVIDERS'  => Tools::getValue('COMPROPAGO_PROVIDERS_selected', $prov),
         );
@@ -807,7 +807,6 @@ class Compropago extends PaymentModule
         }
 
         $this->context->smarty->assign(array(
-            'showLogo'  => $this->showLogo,
             'action'    => $this->context->link->getModuleLink($this->name, 'validation', array(), true),
             'providers' => $f_providers,
             'flag'      => $provflag,

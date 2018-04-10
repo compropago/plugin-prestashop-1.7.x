@@ -39,15 +39,18 @@ class Compropago extends PaymentModule
 {
     private $_html = '';
     private $_postErrors = array();
-    private $serviceFlag;
 
     public $publicKey;
     public $privateKey;
     public $execMode;
+    public $cpCash;
+    public $cpCashTitle;
+    public $cpSpei;
+    public $cpSpeiTitle;
     public $stores;
     public $client;
     public $extra_mail_vars;
-    public $stop = false;
+    public $isActive = true;
 
     public function __construct()
     {
@@ -64,13 +67,21 @@ class Compropago extends PaymentModule
                 'COMPROPAGO_PUBLICKEY'  => Tools::getValue('COMPROPAGO_PUBLICKEY'), 
                 'COMPROPAGO_PRIVATEKEY' => Tools::getValue('COMPROPAGO_PRIVATEKEY'), 
                 'COMPROPAGO_MODE'       => Tools::getValue('COMPROPAGO_MODE'), 
+                'COMPROPAGO_CASH'       => Tools::getValue('COMPROPAGO_CASH'),
+                'COMPROPAGO_SPEI'       => Tools::getValue('COMPROPAGO_SPEI'),
+                'COMPROPAGO_CASH_TITLE' => Tools::getValue('COMPROPAGO_CASH_TITLE'),
+                'COMPROPAGO_SPEI_TITLE' => Tools::getValue('COMPROPAGO_SPEI_TITLE'),
                 'COMPROPAGO_PROVIDER'   => Tools::getValue('COMPROPAGO_PROVIDER')
             ];
         } else {
             $config = Configuration::getMultiple([
                 'COMPROPAGO_PUBLICKEY', 
                 'COMPROPAGO_PRIVATEKEY', 
-                'COMPROPAGO_MODE', 
+                'COMPROPAGO_MODE',                 
+                'COMPROPAGO_CASH',
+                'COMPROPAGO_SPEI',
+                'COMPROPAGO_CASH_TITLE',
+                'COMPROPAGO_SPEI_TITLE',
                 'COMPROPAGO_PROVIDER'
             ]);
         }
@@ -83,7 +94,10 @@ class Compropago extends PaymentModule
             $this->privateKey = $config['COMPROPAGO_PRIVATEKEY'];
         }
 
-        $this->execMode     = (isset($config['COMPROPAGO_MODE'])) ? $config['COMPROPAGO_MODE'] : false;
+        $this->execMode = (isset($config['COMPROPAGO_MODE'])) ? $config['COMPROPAGO_MODE'] : false;
+        $this->cpCash   = (isset($config['COMPROPAGO_CASH'])) ? $config['COMPROPAGO_CASH'] : false;
+        $this->cpSpei   = (isset($config['COMPROPAGO_SPEI'])) ? $config['COMPROPAGO_SPEI'] : false;
+        
         # Most load selected
         $this->stores = explode(',',$config['COMPROPAGO_PROVIDER']);
         $this->ps_versions_compliancy = array('min' => '1.7.0.0', 'max' => _PS_VERSION_);
@@ -102,18 +116,11 @@ class Compropago extends PaymentModule
 
         $this->setComproPago($this->execMode);
 
-        // $itsBE = null;
-
-        // if($this->context->employee){
-        //     $itsBE = true;
-        // }
-        
         if($this->context->employee){
 
             $hook_data = $this->hookRetro(true, $this->publicKey, $this->privateKey, $this->execMode);
 
             if($hook_data[0]){
-
                 $this->warning = $this->l($hook_data[1]);
                 $this->stop = $hook_data[2];
             }
@@ -180,8 +187,11 @@ class Compropago extends PaymentModule
         }
         $defaultProvider = implode(",", $options);
         Configuration::updateValue('COMPROPAGO_PROVIDER', $defaultProvider);
-        Configuration::updateValue('COMPROPAGO_LOGOS', 0);
-        Configuration::updateValue('COMPROPAGO_CHECKLOGO', 1);
+        Configuration::updateValue('COMPROPAGO_CASH', 0);
+        Configuration::updateValue('COMPROPAGO_CASH_TITLE', "Pagos en efectivo - ");
+        Configuration::updateValue('COMPROPAGO_SPEI', 0);
+        Configuration::updateValue('COMPROPAGO_SPEI_TITLE', "Transferencia bancaria - ");
+        
         Configuration::updateValue('COMPROPAGO_WEBHOOK',Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->name.'/webhook.php');
     }
 
@@ -359,8 +369,8 @@ class Compropago extends PaymentModule
             && Configuration::deleteByName('COMPROPAGO_PRIVATEKEY')
             && Configuration::deleteByName('COMPROPAGO_MODE')
             && Configuration::deleteByName('COMPROPAGO_WEBHOOK')
-            && Configuration::deleteByName('COMPROPAGO_LOGOS')
-            && Configuration::deleteByName('COMPROPAGO_CHECKLOGO')
+            && Configuration::deleteByName('COMPROPAGO_SPEI')
+            && Configuration::deleteByName('COMPROPAGO_CASH')
             && Configuration::deleteByName('COMPROPAGO_PROVIDER')
             && Configuration::deleteByName('COMPROPAGO_PENDING')
             && Configuration::deleteByName('COMPROPAGO_SUCCESS')
@@ -468,8 +478,10 @@ class Compropago extends PaymentModule
             Configuration::updateValue('COMPROPAGO_PRIVATEKEY', Tools::getValue('COMPROPAGO_PRIVATEKEY'));
             Configuration::updateValue('COMPROPAGO_WEBHOOK', Tools::getValue('COMPROPAGO_WEBHOOK'));
             Configuration::updateValue('COMPROPAGO_MODE', Tools::getValue('COMPROPAGO_MODE'));
-            Configuration::updateValue('COMPROPAGO_LOGOS', Tools::getValue('COMPROPAGO_LOGOS'));
-            Configuration::updateValue('COMPROPAGO_CHECKLOGO', Tools::getValue('COMPROPAGO_CHECKLOGO'));
+            Configuration::updateValue('COMPROPAGO_CASH', Tools::getValue('COMPROPAGO_CASH'));
+            Configuration::updateValue('COMPROPAGO_CASH_TITLE', Tools::getValue('COMPROPAGO_CASH_TITLE'));
+            Configuration::updateValue('COMPROPAGO_SPEI', Tools::getValue('COMPROPAGO_SPEI'));
+            Configuration::updateValue('COMPROPAGO_SPEI_TITLE', Tools::getValue('COMPROPAGO_SPEI_TITLE'));
             $prov = implode(',',Tools::getValue('COMPROPAGO_PROVIDERS_selected'));
             Configuration::updateValue('COMPROPAGO_PROVIDER', $prov);
         } 
@@ -545,7 +557,7 @@ class Compropago extends PaymentModule
             return true;
         }
     }
-    
+
     /**
     * Render Cash payment method
     * @return boolean
@@ -553,10 +565,9 @@ class Compropago extends PaymentModule
     public function getPaymentCash()
     {
        $newOption = new PaymentOption();
-            $newOption->setCallToActionText($this->l("Pago en efectivo - ", array(), "Modules.compropago.Admin"))
-            ->setLogo(Media::getMediaPath(_PS_MODULE_DIR_.$this->name.'/cp-logo-25.png'))
-                
-                ->setForm($this->generateForm());
+            $newOption->setCallToActionText($this->l(Configuration::get('COMPROPAGO_CASH_TITLE')." ", array(), "Modules.compropago.Admin"))
+            ->setLogo(Media::getMediaPath(_PS_MODULE_DIR_.$this->name.'/compropago-efectivo-v2.png'))
+            ->setForm($this->generateCashForm());
             return $newOption;
     }
 
@@ -564,20 +575,14 @@ class Compropago extends PaymentModule
     * Render Spei payment method
     * @return boolean
     */
-    // public function getPaymentSpei()
-    // {
-    //    $newOption = new PaymentOption();
-    //         $newOption->setLogo(Media::getMediaPath(_PS_MODULE_DIR_.$this->name.'/cp-logo-40.jpg'), "style='background:#3e3d40'")
-    //                 ->setInputs([
-    //                         'token' => [
-    //                             'name' =>'token',
-    //                             'type' =>'hidden',
-    //                             'value' =>'12345689',
-    //                         ],
-    //                     ])
-    //             ->setCallToActionText($this->l("Pago por SPEI -", array(), "Modules.compropago.Admin"));
-    //         return $newOption;
-    // }
+    public function getPaymentSpei()
+    {
+       $newOption = new PaymentOption();
+            $newOption->setCallToActionText($this->l(Configuration::get('COMPROPAGO_SPEI_TITLE')." ", array(), "Modules.compropago.Admin"))
+            ->setLogo(Media::getMediaPath(_PS_MODULE_DIR_.$this->name.'/compropago-spei-v2.png'))
+            ->setForm($this->generateSpeiForm());
+            return $newOption;
+    }
 
     /**
     * Get the view of options payment
@@ -587,17 +592,22 @@ class Compropago extends PaymentModule
     {
         if (!empty($this->publicKey) && !empty($this->privateKey)) {
 
+
             if (!$this->active) {
                 return;
             }
             if (!$this->checkCurrency($params['cart'])) {
                 return;
             }
-              $payment_options = [
-            $this->getPaymentCash(),
-            //$this->getPaymentSpei()
+            
+            if($this->cpCash == "1") {
+                $payment_options[] = $this->getPaymentCash();
+            }
 
-        ];
+            if($this->cpSpei == "1") {
+                $payment_options[] = $this->getPaymentSpei();
+            }
+            
         return $payment_options;
         }
     }   
@@ -678,8 +688,9 @@ class Compropago extends PaymentModule
                     'name'      => $provider->name
                 ];
             }
-            
-            $fields_form = array(
+
+
+            $config_form = array(
                 'form' => array(
                     'legend' => array(
                         'title' => $this->l(' Configuración'),
@@ -690,17 +701,14 @@ class Compropago extends PaymentModule
                             'type'     => 'text',
                             'label'    => $this->l('Llave Pública'),
                             'name'     => 'COMPROPAGO_PUBLICKEY',
+                            'class'    => 'input fixed-width-xxl',
                             'required' => true
-                        ),
-                        array(
-                            'type'     => 'hidden',
-                            'name'     => 'COMPROPAGO_WEBHOOK',
-                            'required' => false
                         ),
                         array(
                             'type'     => 'text',
                             'label'    => $this->l('Llave Privada'),
                             'name'     => 'COMPROPAGO_PRIVATEKEY',
+                            'class' => 'input fixed-width-xxl',
                             'required' => true
                         ),
                         array(
@@ -724,6 +732,52 @@ class Compropago extends PaymentModule
                             )
                         ),
                         array(
+                            'type'     => 'hidden',
+                            'name'     => 'COMPROPAGO_WEBHOOK',
+                            'required' => false
+                        ),
+                    ),
+                    'submit' => array(
+                        'title' => $this->l('Save'),
+                    )
+                ),
+            );
+            $cash_form = array(
+                'form' => array(
+                    'legend' => array(
+                        'title' => $this->l('- Pago en efectivo '),
+                        'image' => '../modules/compropago/compropago-efectivo-v2.png'
+                    ),
+                    'input' => array(
+                         array(
+                            'type'     => 'switch',
+                            'label'    => $this->l('Habilitar'),
+                            'desc'     => $this->l('Seleccione esta opción para activar los pagos en efectivo'),
+                            'name'     => 'COMPROPAGO_CASH',
+                            'is_bool'  => true,
+                            'required' => true,
+                            'values'   => array(
+                                array(
+                                    'id'    => 'active_on_bv',
+                                    'value' => true,
+                                    'label' => $this->l('Modo Activo')
+                                ),
+                                array(
+                                    'id'    => 'active_off_bv',
+                                    'value' => false,
+                                    'label' => $this->l('Modo Pruebas')
+                                )
+                            )
+                        ),
+                        array(
+                            'type'     => 'text',
+                            'label'    => $this->l('Titulo'),
+                            'name'     => 'COMPROPAGO_CASH_TITLE',
+                            'class'    => 'input fixed-width-xxl',
+                            'style'    => 'background:#000',
+                            'required' => true
+                        ),
+                        array(
                             'type'     => 'swap',
                             'multiple' => true,
                             'label'    => $this->l('Tiendas'),
@@ -736,6 +790,46 @@ class Compropago extends PaymentModule
                             )
                         ),
                         ///END OF FIELDS
+                    ),
+                    'submit' => array(
+                        'title' => $this->l('Save'),
+                    )
+                ),
+            );
+            $spei_form = array(
+                'form' => array(
+                    'legend' => array(
+                        'title' => $this->l('- Transferencias SPEI'),
+                        'image' => '../modules/compropago/compropago-spei-v2.png'
+                    ),
+                    'input' => array(
+                        array(
+                            'type'     => 'switch',
+                            'label'    => $this->l('Habilitar'),
+                            'desc'     => $this->l('Seleccione esta opción para activar los pagos vía SPEI'),
+                            'name'     => 'COMPROPAGO_SPEI',
+                            'is_bool'  => true,
+                            'required' => true,
+                            'values'   => array(
+                                array(
+                                    'id'    => 'active_on_bv',
+                                    'value' => true,
+                                    'label' => $this->l('Modo Activo')
+                                ),
+                                array(
+                                    'id'    => 'active_off_bv',
+                                    'value' => false,
+                                    'label' => $this->l('Modo Pruebas')
+                                )
+                            )
+                        ),
+                        array(
+                            'type'     => 'text',
+                            'label'    => $this->l('Titulo'),
+                            'name'     => 'COMPROPAGO_SPEI_TITLE',
+                            'class'    => 'input fixed-width-xxl',
+                            'required' => true
+                        ),
                     ),
                     'submit' => array(
                         'title' => $this->l('Save'),
@@ -759,7 +853,8 @@ class Compropago extends PaymentModule
                 'languages'     => $this->context->controller->getLanguages(),
                 'id_language'   => $this->context->language->id
             );
-            return $helper->generateForm(array($fields_form));
+            
+            return $helper->generateForm(array($config_form, $cash_form, $spei_form));
         } catch (\Exception $e) {
             die("Error al crear el formulario: " . $e->message);
         }
@@ -776,6 +871,10 @@ class Compropago extends PaymentModule
             'COMPROPAGO_PUBLICKEY'  => Tools::getValue('COMPROPAGO_PUBLICKEY', Configuration::get('COMPROPAGO_PUBLICKEY')),
             'COMPROPAGO_PRIVATEKEY' => Tools::getValue('COMPROPAGO_PRIVATEKEY', Configuration::get('COMPROPAGO_PRIVATEKEY')),
             'COMPROPAGO_MODE'       => Tools::getValue('COMPROPAGO_MODE', Configuration::get('COMPROPAGO_MODE')),
+            'COMPROPAGO_CASH'       => Tools::getValue('COMPROPAGO_CASH', Configuration::get('COMPROPAGO_CASH')),
+            'COMPROPAGO_SPEI'       => Tools::getValue('COMPROPAGO_SPEI', Configuration::get('COMPROPAGO_SPEI')),
+            'COMPROPAGO_CASH_TITLE' => Tools::getValue('COMPROPAGO_CASH_TITLE', Configuration::get('COMPROPAGO_CASH_TITLE')),
+            'COMPROPAGO_SPEI_TITLE' => Tools::getValue('COMPROPAGO_SPEI_TITLE', Configuration::get('COMPROPAGO_SPEI_TITLE')),
             'COMPROPAGO_WEBHOOK'    => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->name.'/webhook.php',
             'COMPROPAGO_PROVIDERS'  => Tools::getValue('COMPROPAGO_PROVIDERS_selected', $prov),
         );
@@ -785,7 +884,7 @@ class Compropago extends PaymentModule
     * This method generate the checkout form
     * @return view 
     */
-    protected function generateForm()
+    protected function generateCashForm()
     {   
         global $currency;
         $providers = $this->client->api->listProviders( 0, $currency->iso_code);
@@ -811,6 +910,21 @@ class Compropago extends PaymentModule
             'providers' => $f_providers,
             'flag'      => $provflag,
         ));
-        return $this->display(__FILE__, './views/templates/hook/payment_form.tpl');
+        return $this->display(__FILE__, './views/templates/hook/payment_cash.tpl');
+    }
+
+    /**
+    * This method generate the checkout form
+    * @return view 
+    */
+    protected function generateSpeiForm()
+    {   
+
+        $this->context->smarty->assign(array(
+            'action'    => $this->context->link->getModuleLink($this->name, 'validation', array(), true),
+            'type'      => "SPEI",
+            
+        ));
+        return $this->display(__FILE__, './views/templates/hook/payment_spei.tpl');
     }
 }

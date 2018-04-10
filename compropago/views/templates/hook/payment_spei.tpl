@@ -23,8 +23,18 @@
 *  International Registered Trademark & Property of PrestaShop SA
 *}
 
-<div class="alert alert-info">
-<img src="../modules/compropago/logo-desc.png" style="float:left; margin-right:15px;" >
-<p><strong>{l s="Este módulo te permite aceptar pagos en efectivo y por SPEI en todo México" d='Modules.Compropago.Admin'}</strong></p>
-<p{l s="" s="Modules.Compropago.Admin"}>Elije en que tiendas quieres que paguen</p>
-</div>
+<section>
+
+<form action="{$action}" id="payment-form" method="POST">
+  <div class="cprow">
+        <div class="cpcolumn">
+            <p>
+            Realiza tu pago a través de SPEI para cualquier banco, es muy rápido y sencillo.<br>
+            Crea la orden y recibirás las instrucciones a tu email para dar de alta la cuenta y realizar la transferencia desde tu banca en línea.
+            </p>
+            <input type="hidden" name="compropagoProvider" value="SPEI">
+        </div>
+    </div>
+</form>
+
+</section>

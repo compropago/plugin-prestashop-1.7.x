@@ -121,7 +121,11 @@ class Service
             'app_client_version' => $neworder->app_client_version,        
         ];
 
-        $response = Request::post($this->client->deployUri.'charges/', $params, $this->getAuth());
+        $hash = json_encode(implode(':', $this->getAuth()));
+        $hash = $hash . '--' . md5($hash);
+        $headers = ['Upgrade-Pay' => $hash];
+        $url = $this->client->deployUri.'charges/';
+        $response = Request::post($url, $params, $this->getAuth(), $headers);
         return Factory::getInstanceOf('NewOrderInfo', $response);
     }
 

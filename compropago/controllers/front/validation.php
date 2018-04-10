@@ -64,7 +64,8 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
         $total = (float)$cart->getOrderTotal(true, Cart::BOTH);
         
         $compropagoStore = (!isset($_POST['compropagoProvider']) || empty($_POST['compropagoProvider'])) ? 'SEVEN_ELEVEN' : $_POST['compropagoProvider'];
-
+        var_dump($_POST['compropagoProvider']);
+        
         $mailVars = array(
             '{check_name}' => Configuration::get('CHEQUE_NAME'),
             '{check_address}' => Configuration::get('CHEQUE_ADDRESS'),
@@ -73,7 +74,31 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
         $result = $this->module->validateOrder((int)$cart->id, Configuration::get('COMPROPAGO_PENDING'), $total, $this->module->displayName, NULL, $mailVars, (int)$currency->id, false, $customer->secure_key);
         $OrderName = 'Ref:' . $this->module->currentOrder . " " . Configuration::get('PS_SHOP_NAME');
         
-        $order_info = [
+       if($compropagoStore == "SPEI"){
+           $order_spei = [
+            product => [
+                id      => $this->module->currentOrder,
+                price   => $total,
+                name    => $OrderName,
+                url     => ""
+            ],
+            customer => [
+                name    => $customer->firstname . ' ' . $customer->lastname,
+                email   => $customer->email,
+                phone   => ""
+            ],
+            payment => [
+                type => $compropagoStore
+            ]
+           ];
+            $order_json = json_encode($order_spei);
+
+            $url_request = "https://ms-api.compropago.io/v2/orders";
+            /**
+            * Curl
+            */
+       } else {
+            $order_info = [
                     'order_id'           => $this->module->currentOrder,
                     'order_name'         => $OrderName,
                     'order_price'        => $total,
@@ -106,6 +131,7 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
         if (!$this->module->verifyTables()) {
             die($this->module->l('This payment method is not available.', 'validation') . '<br>ComproPago Tables Not Found');
         }
+       }
 
         try {
             $recordTime = time();

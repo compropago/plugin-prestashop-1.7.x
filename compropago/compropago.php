@@ -274,7 +274,7 @@ class Compropago extends PaymentModule
             'send_email'    => 0,
             'module_name'   => pSQL($this->name),
             'color'         => '#CCFF00',
-            'unremovable'   => 0,
+            'unremovable'   => 0,   
             'hidden'        => 0,
             'logable'       => 1,
             'delivery'      => 0,
@@ -365,15 +365,10 @@ class Compropago extends PaymentModule
             && Configuration::deleteByName('COMPROPAGO_PENDING')
             && Configuration::deleteByName('COMPROPAGO_SUCCESS')
             && Configuration::deleteByName('COMPROPAGO_EXPIRED')
-            && $this->uninstallTables()
+            && Db::getInstance()->Execute('DROP TABLE IF EXISTS `' . _DB_PREFIX_ . 'compropago_orders`')
+            && Db::getInstance()->Execute('DROP TABLE IF EXISTS `' . _DB_PREFIX_ . 'compropago_transactions`')
+            && Db::getInstance()->Execute('DROP TABLE IF EXISTS `' . _DB_PREFIX_ . 'compropago_webhook_transactions`')
             && parent::uninstall();
-    }
-
-    public function uninstallTables()
-    {
-        Db::getInstance()->execute('DROP TABLE `' . _DB_PREFIX_ . 'compropago_orders`;');
-        Db::getInstance()->execute('DROP TABLE `' . _DB_PREFIX_ . 'compropago_transactions`;');
-        Db::getInstance()->execute('DROP TABLE `' . _DB_PREFIX_ . 'compropago_webhook_transactions`;');
     }
 
     /**

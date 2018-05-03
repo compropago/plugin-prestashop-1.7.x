@@ -163,7 +163,7 @@ class Compropago extends PaymentModule
             $this->installOrderStates();
             $this->installTables();
         } catch (Exception $e) {
-            echo 'Excepción capturada: ',  $e->getMessage(), "\n";
+            die('Excepción capturada: ' . $e->getMessage());
         }
 
         return parent::install()
@@ -173,12 +173,13 @@ class Compropago extends PaymentModule
     }
 
     /**
-    * Get the providers by default
-    * @return array
-    */
+     * Get the providers by default
+     * @return array
+     * @throws Exception
+     */
     public function getDefaultProviders()
     {
-        $this->client = new Client();
+        $this->client = new Client('', '', false);
         $providers = $this->client->api->listDefaultProviders();
         $options = [];
 
@@ -219,7 +220,7 @@ class Compropago extends PaymentModule
         Db::getInstance()->Execute('DROP TABLE IF EXISTS `' . _DB_PREFIX_ . 'compropago_orders`');
         Db::getInstance()->Execute('DROP TABLE IF EXISTS `' . _DB_PREFIX_ . 'compropago_transactions`');
 
-        Db::getInstance()->execute(
+        Db::getInstance()->Execute(
             'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_  . 'compropago_orders` (
             `id` int(11) NOT NULL AUTO_INCREMENT,
             `date` int(11) NOT NULL,
@@ -235,7 +236,7 @@ class Compropago extends PaymentModule
             PRIMARY KEY (`id`), UNIQUE KEY (`compropagoId`)
             )ENGINE=MyISAM DEFAULT CHARSET=utf8  DEFAULT COLLATE utf8_general_ci  AUTO_INCREMENT=1 ;');
 
-        Db::getInstance()->execute(
+        Db::getInstance()->Execute(
             'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'compropago_transactions` (
             `id` int(11) NOT NULL AUTO_INCREMENT,
             `orderId` int(11) NOT NULL,
@@ -248,7 +249,6 @@ class Compropago extends PaymentModule
             `ioOut` mediumtext,
             PRIMARY KEY (`id`)
             )ENGINE=MyISAM DEFAULT CHARSET=utf8  DEFAULT COLLATE utf8_general_ci  AUTO_INCREMENT=1 ;');
-
     }
 
     /**

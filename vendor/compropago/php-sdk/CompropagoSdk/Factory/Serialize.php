@@ -79,9 +79,9 @@ class Serialize
         } else {
             $obj = new Customer();
 
-            $obj->customer_name = $data['customer_name'];
-            $obj->customer_email = $data['customer_email'];
-            $obj->customer_phone = $data['customer_phone'];
+            $obj->customer_name = empty($data['customer_name']) ? null : $data['customer_name'];
+            $obj->customer_email = empty($data['customer_email']) ? null : $data['customer_email'];
+            $obj->customer_phone = empty($data['customer_phone']) ? null : $data['customer_phone'];
 
             return $obj;
         }
@@ -251,13 +251,13 @@ class Serialize
         } else {
             $obj = new Exchange();
 
-            $obj->rate = $data['rate'];
-            $obj->request = $data['request'];
-            $obj->exchange_id = $data['exchange_id'];
-            $obj->final_amount = $data['final_amount'];
-            $obj->origin_amount = $data['origin_amount'];
-            $obj->final_currency = $data['final_currency'];
-            $obj->origin_currency = $data['origin_currency'];
+            $obj->rate = empty($data['rate']) ? null : $data['rate'];
+            $obj->request = empty($data['request']) ? null : $data['request'];
+            $obj->exchange_id = empty($data['exchange_id']) ? null : $data['exchange_id'];
+            $obj->final_amount = empty($data['final_amount']) ? null : $data['final_amount'];
+            $obj->origin_amount = empty($data['origin_amount']) ? null : $data['origin_amount'];
+            $obj->final_currency = empty($data['final_currency']) ? null : $data['final_currency'];
+            $obj->origin_currency = empty($data['origin_currency']) ? null : $data['origin_currency'];
 
             return $obj;
         }

@@ -83,7 +83,7 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
                 'compropagoStatus' => $response->status,
                 'storeCartId'      => $cart->id,
                 'storeOrderId'     => $this->module->currentOrder,
-                'storeExtra'       => 'COMPROPAGO_PENDING',
+                'storeExtra'       => 'SPEI',
                 'ioIn'             => $ioIn,
                 'ioOut'            => $ioOut
             );
@@ -145,7 +145,7 @@ class CompropagoValidationModuleFrontController extends ModuleFrontController
                 'compropagoStatus' => $response->type,
                 'storeCartId'      => $cart->id,
                 'storeOrderId'     => $this->module->currentOrder,
-                'storeExtra'       => 'COMPROPAGO_PENDING',
+                'storeExtra'       => 'CASH',
                 'ioIn'             => $ioIn,
                 'ioOut'            => $ioOut
             );

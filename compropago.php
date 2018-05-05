@@ -277,7 +277,7 @@ class Compropago extends PaymentModule
             'send_email'    => 0,
             'module_name'   => pSQL($this->name),
             'color'         => '#CCFF00',
-            'unremovable'   => 0,
+            'unremovable'   => 0,   
             'hidden'        => 0,
             'logable'       => 1,
             'delivery'      => 0,
@@ -642,8 +642,10 @@ class Compropago extends PaymentModule
     public function checkCurrency($cart)
     {
         $currency_order = new Currency((int)($cart->id_currency));
-        $currencies_module = $this->getCurrency((int)$cart->id_currency);
-        if ($currency_order->iso_code=='MXN' || $currency_order->iso_code=='USD' || $currency_order->iso_code=='EUR' || $currency_order->iso_code=='GBP') {
+
+        $available = ['MXN', 'USD', 'EUR', 'GBP'];
+
+        if (in_array($currency_order->iso_code, $available)) {
             return true;
         }
         return false;

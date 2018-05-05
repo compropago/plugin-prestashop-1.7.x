@@ -25,7 +25,6 @@ function StylerProviders(){
 
     this.init = function(){
         that.clickProvider();
-        console.log(that.labels);
     };
 
     this.clickProvider = function(){

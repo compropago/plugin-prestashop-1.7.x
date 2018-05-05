@@ -247,6 +247,7 @@ class CompropagoWebhook
     }
 
     /**
+     * Verify status of a spei order
      * @param $orderId
      * @return object
      * @throws Exception

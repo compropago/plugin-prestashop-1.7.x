@@ -1,106 +1,109 @@
 #cppayment_store {
-    background: url(https://compropago.com/assets/terminal/select-input.png) no-repeat;
-    width: 298px;
-    height: 39px;
-    position: relative;
-    background-size: 100% auto;
-    max-width: 100%
+	/*background: url(https://compropago.com/assets/terminal/select-input.png) no-repeat;*/
+	width: 298px;
+	height: 39px;
+	position: relative;
+	background-size: 100% auto;
+	max-width: 100%
 }
 #cppayment_store select.providers_list {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    outline: 0;
-    border: 1px solid #8f8f8f;
-    border-radius: 3px;
-    height: 100%;
-    width: 100%;
-    padding-left: 5px;    
-    text-transform: capitalize;
-    font-size: 14px;
-    margin-top: 10px;
-    background-image:
-    linear-gradient(45deg, transparent 50%, gray 50%),
-    linear-gradient(135deg, gray 50%, transparent 50%),
-    linear-gradient(to right, #ccc, #ccc) !important;
-  background-position:
-    calc(100% - 20px) calc(1em + 2px),
-    calc(100% - 15px) calc(1em + 2px),
-    calc(100% - 2.5em) 0.5em;
-  background-size:
-    5px 5px,
-    5px 5px,
-    1px 1.5em;
-  background-repeat: no-repeat;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	outline: 0;
+	border: 1px solid #8f8f8f;
+	border-radius: 3px;
+	height: 100%;
+	width: 100%;
+	padding-left: 5px;    
+	text-transform: capitalize;
+	font-size: 14px;
+	margin-top: 10px;
+	background-image:
+		linear-gradient(45deg, transparent 50%, gray 50%),
+		linear-gradient(135deg, gray 50%, transparent 50%),
+		linear-gradient(to right, #ccc, #ccc) !important;
+	background-position:
+		calc(100% - 20px) calc(1em + 2px),
+		calc(100% - 15px) calc(1em + 2px),
+		calc(100% - 2.5em) 0.5em;
+	background-size:
+		5px 5px,
+		5px 5px,
+		1px 1.5em;
+	background-repeat: no-repeat;
 }
 
 #cppayment_store select.providers_list:focus {
-    background-image: linear-gradient(45deg, green 50%, transparent 50%), linear-gradient(135deg, transparent 50%, green 50%), linear-gradient(to right, #ccc, #ccc);
+	background-image:
+		linear-gradient(45deg, green 50%, transparent 50%),
+		linear-gradient(135deg, transparent 50%, green 50%),
+		linear-gradient(to right, #ccc, #ccc);
 }
 
 .cppayment_text {
-    font-size:12px;
-    color: #8f8f8f;
+	font-size:12px;
+	color: #8f8f8f;
 }
 
 .cppayment_text a{
-    font-weight: bold;
-    text-decoration: none;
+	font-weight: bold;
+	text-decoration: none;
 }
 
 .cppayment_text a:hover {
-    text-decoration: underline;
+	text-decoration: underline;
 }
 
 ul.providers_list {
-    background: none;
-    width: 100%;
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-flex-wrap: wrap;
-    -ms-flex-wrap: wrap;
-    flex-wrap: wrap;
-    height: auto
+	background: none;
+	width: 100%;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-flex-wrap: wrap;
+	-ms-flex-wrap: wrap;
+	flex-wrap: wrap;
+	height: auto
 }
 
 ul.providers_list label img,
 ul.providers_list label {
-    display: block;
-    width: 75px !important;
-    margin-right: 12px !important;
-    margin-bottom: 12px !important;
-    border-radius: 3px;
-    position: relative;
-    transition: all .2s linear;
-    box-shadow: none
+	display: block;
+	width: 75px !important;
+	margin-right: 12px !important;
+	margin-bottom: 12px !important;
+	border-radius: 3px;
+	position: relative;
+	transition: all .2s linear;
+	box-shadow: none
 }
 
-ul.providers_list input[type="radio"]{
-    display: none;
-    position: absolute;
+ul.providers_list input[type="radio"] {
+	display: none;
+	position: absolute;
 }
 
 ul.providers_list label:checked {
-    box-shadow: 0 0 6px 3px #00aaef;
-    opacity: 1;
+	box-shadow: 0 0 6px 3px #00aaef;
+	opacity: 1;
 }
 
 ul.providers_list label {
-    display: block;
-    margin: 0 auto;
-    float: none;
-    width: 100%;
-    opacity: 0.7;
-    transition-property: all;
-    transition-duration: 0.3s;
+	display: block;
+	margin: 0 auto;
+	float: none;
+	width: 100%;
+	opacity: 0.7;
+	transition-property: all;
+	transition-duration: 0.3s;
 }
 
 ul.providers_list img:hover {
-    opacity: 1;
-    box-shadow: 0 0 6px 3px #00aaef;
+	opacity: 1;
+	box-shadow: 0 0 6px 3px #00aaef;
 }
 
 ul.providers_list .provider_selected img{
-    opacity: 1;
-    box-shadow: 0 0 6px 3px #00aaef;
+	opacity: 1;
+	box-shadow: 0 0 6px 3px #00aaef;
 }

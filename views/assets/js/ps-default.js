@@ -18,27 +18,33 @@
  * @author Eduardo Aguilar <eduardo.aguilar@compropago.com>
  */
 
-function StylerProviders(){
+function StylerProviders()
+{
     var that = this;
 
     this.labels = document.querySelectorAll("ul.providers_list label img");
 
-    this.init = function(){
+    this.init = function()
+    {
         that.clickProvider();
     };
 
-    this.clickProvider = function(){
-        for(count = 0; count < that.labels.length; count++){
-            that.labels[count].addEventListener("click", function(evt){
+    this.clickProvider = function()
+    {
+        for(count = 0; count < that.labels.length; count++)
+        {
+            that.labels[count].addEventListener("click", function(evt)
+            {
                 that.clearProviders();
-
                 this.classList.add('provider_selected');
             });
         }
     };
 
-    this.clearProviders = function(){
-        for(count = 0; count < that.labels.length; count++){
+    this.clearProviders = function()
+    {
+        for(count = 0; count < that.labels.length; count++)
+        {
             that.labels[count].classList.remove('provider_selected');
         }
     };
@@ -46,6 +52,6 @@ function StylerProviders(){
 }
 
 
-window.onload = function(){
+window.onload = function() {
     new StylerProviders().init();
 };

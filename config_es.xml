@@ -2,11 +2,11 @@
 <module>
     <name>compropago</name>
     <displayName><![CDATA[ComproPago]]></displayName>
-    <version><![CDATA[2.1.1]]></version>
+    <version><![CDATA[3.0.0]]></version>
     <description><![CDATA[Este m&oacute;dulo te permite aceptar pagos en efectivo en M&eacute;xico.]]></description>
     <author><![CDATA[ComproPago]]></author>
     <tab><![CDATA[payments_gateways]]></tab>
-	<confirmUninstall><![CDATA[Estás seguro de que quieres desinstalar el plugin?]]></confirmUninstall>
+	<confirmUninstall><![CDATA[¿Seguro de que quieres desinstalar el plugin?]]></confirmUninstall>
     <is_configurable>1</is_configurable>
     <need_instance>1</need_instance>
 	<limited_countries></limited_countries>

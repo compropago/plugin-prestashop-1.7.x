@@ -27,6 +27,7 @@
 /**
  * @deprecated 1.5.0 This file is deprecated, use moduleFrontController instead
  */
+
 error_reporting(E_ALL);
 ini_set("display_errors", 1); 
 
@@ -42,31 +43,53 @@ $context = Context::getContext();
 $cart = $context->cart;
 $compropago = new Compropago();
 
-if ($cart->id_customer == 0 || $cart->id_address_delivery == 0 || $cart->id_address_invoice == 0 || !$compropago->active) {
+if (
+    $cart->id_customer == 0
+    || $cart->id_address_delivery == 0
+    || $cart->id_address_invoice == 0
+    || !$compropago->active
+) {
     Tools::redirect('index.php?controller=order&step=1');
 }
 
-// Check that this payment option is still available in case the customer changed his address just before the end of the checkout process
+
+/**
+ * Check that this payment option is still available
+ * in case the customer changed his address just before
+ * the end of the checkout process
+ */
 $authorized = false;
-foreach (Module::getPaymentModules() as $module) {
-    if ($module['name'] == 'compropago') {
+foreach (Module::getPaymentModules() as $module)
+{
+    if ($module['name'] == 'compropago')
+    {
         $authorized = true;
         break;
     }
 }
-if (!$authorized) {
-    die($compropago->l('This payment method is not available.', 'Modules.compropago.Admin'));
-}
+
+if (!$authorized) die($compropago->l('This payment method is not available.', 'Modules.compropago.Admin'));
 
 $customer = new Customer($cart->id_customer);
 
-if (!Validate::isLoadedObject($customer)) {
+if (!Validate::isLoadedObject($customer))
+{
     Tools::redirect('index.php?controller=order&step=1');
 }
 
 $currency = $context->currency;
 $total = (float)$cart->getOrderTotal(true, Cart::BOTH);
 
-$compropago->validateOrder((int)$cart->id, Configuration::get('COMPROPAGO_PENDING'), $total, $compropago->displayName, null, array(), (int)$currency->id, false, $customer->secure_key);
+$compropago->validateOrder(
+    (int) $cart->id,
+    Configuration::get('COMPROPAGO_PENDING'),
+    $total,
+    $compropago->displayName,
+    null,
+    [],
+    (int) $currency->id,
+    false,
+    $customer->secure_key
+);
 
-Tools::redirect('index.php?controller=order-confirmation&id_cart='.(int)($cart->id).'&id_module='.(int)($compropago->id).'&id_order='.$compropago->currentOrder.'&key='.$customer->secure_key.'&compropagoId=' . $response->id);
+Tools::redirect('index.php?controller=order-confirmation&id_cart='.( (int) $cart->id ).'&id_module='.( (int) $compropago->id )."&id_order={$compropago->currentOrder}&key={$customer->secure_key}&compropagoId={$response['id']}");

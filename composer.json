@@ -1,10 +1,15 @@
 {
-    "name": "Plugin ComproPago for PrestaShop",
+    "name": "compropago/plugin-prestashop-1.7",
     "description": "Este módulo permite la integración del servicio ComproPago en tu eCommerce de PrestaShop. Con ComproPago puede recibir pagos en OXXO, 7Eleven y muchas tiendas más en todo México.",
     "type": "prestashop-module",
     "require": {
         "php": ">=5.6",
-        "compropago/php-sdk": "5.0.0.0",
-        "rmccue/requests": ">=1.0"
+        "compropago/php-sdk": "5.0.0.0"
+    },
+    "support": {
+        "docs": "http://demo.compropago.com/plugins/prestashop-1-7",
+        "email": "soporte@compropago.com",
+        "issues": "https://github.com/compropago/plugin-prestashop-1.7.x/issues",
+        "source": "https://github.com/compropago/plugin-prestashop-1.7.x"
     }
 }

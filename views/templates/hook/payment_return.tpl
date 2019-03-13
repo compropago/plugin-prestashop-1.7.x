@@ -26,35 +26,39 @@
 {if $status == 'ok'}
 
 	<div class="compropagoDivFrame" id="compropagodContainer" style="width: 100%;">
-    <iframe style="width: 100%; height:937px"
-        id="compropagodFrame"
-        src="https://compropago.com/comprobante?confirmation_id={$order_id_co}"
-        frameborder="0"
-        scrolling="yes"> </iframe>
-</div>
-<script type="text/javascript">
-    function resizeIframe() {
-        var container=document.getElementById("compropagodContainer");
-        var iframe=document.getElementById("compropagodFrame");
-        if(iframe && container){
-            var ratio=585/811;
-            var width=container.offsetWidth;
-            var height=(width/ratio);
-            if(height>937){ height=937;}
-            iframe.style.width=width + 'px';
-            iframe.style.height=height + 'px';
+        <iframe style="width: 100%; height:937px"
+            id="compropagodFrame"
+            src="https://compropago.com/comprobante?confirmation_id={$order_id_co}"
+            frameborder="0"
+            scrolling="yes"> </iframe>
+    </div>
+
+    <script type="text/javascript">
+        function resizeIframe() {
+            var container=document.getElementById("compropagodContainer");
+            var iframe=document.getElementById("compropagodFrame");
+            if(iframe && container){
+                var ratio=585/811;
+                var width=container.offsetWidth;
+                var height=(width/ratio);
+                if(height>937){ height=937;}
+                iframe.style.width=width + 'px';
+                iframe.style.height=height + 'px';
+            }
         }
-    }
-    window.onload = function() {
-        resizeIframe();
-    };
-    window.onresize = function(event) {
-        resizeIframe();
-    };
-</script>
+        window.onload = function() {
+            resizeIframe();
+        };
+        window.onresize = function(event) {
+            resizeIframe();
+        };
+    </script>
+
 {else}
+
 	<p class="warning">
 		{l s='We have noticed that there is a problem with your order. If you think this is an error, you can contact our' d='Modules.Compropago.Shop'}
 		<a href="{$link->getPageLink('contact', true)|escape:'html'}">{l s='customer service department.' d='Modules.Compropago.Shop'}</a>.
 	</p>
+
 {/if}

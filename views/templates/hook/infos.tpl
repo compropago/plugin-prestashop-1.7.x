@@ -23,8 +23,8 @@
 *  International Registered Trademark & Property of PrestaShop SA
 *}
 
-<div class="alert alert-info">
+<div class="alert alert-info alert-dismiss">
 <img src="../modules/compropago/logo-desc.png" style="float:left; margin-right:15px;" >
 <p><strong>{l s="Este módulo te permite aceptar pagos en efectivo y por SPEI en todo México" d='Modules.Compropago.Admin'}</strong></p>
-<p{l s="" s="Modules.Compropago.Admin"}>Elije en que tiendas quieres que paguen</p>
+<p>{l s="Elije en que tiendas quieres que paguen." d="Modules.Compropago.Admin"}</p>
 </div>

@@ -24,41 +24,40 @@
 *}
 
 
-{if $flag == false}
+{if $flag == true}
 
-<div class="cprow">
-    <div class="cpcolumn">
-        <br>
-        <h1>¡Servicio temporalmente fuera de servicio!</h1>
-    </div>
-</div>
-
-{else}
-
-<div class="cprow">
-    <div class="cpcolumn">
-    <br>
-        <h4>¿Dónde quieres pagar?<sup>*</sup></h4>
-    </div>
-</div>
-
-{/if}
-
-
-<form action="{$action}" id="payment-form" method="POST">
     <div class="cprow">
         <div class="cpcolumn">
-            <div id="cppayment_store">
-                <select title="providers" name="compropagoProvider" class="providers_list">
-                    {foreach $providers as $provider}
-                        <option value="{$provider->internal_name}">{$provider->name}</option>
-                    {/foreach}
-                </select>
-            </div>
-            <div class="cppayment_text">
-                <br>
-                <p style="font-size:12px; color: #8f8f8f"><sup>*</sup>Comisionistas <a href="https://compropago.com/legal/corresponsales_cnbv.pdf" target="_blank" style="font-size:12px; color: #8f8f8f; font-weight:bold">autorizados por la CNBV</a> como corresponsales bancarios.</p>
-            </div>
+        <br>
+            <h4>¿Dónde quieres pagar?<sup>*</sup></h4>
         </div>
     </div>
-</form>
+
+    <form action="{$action}" id="payment-form" method="POST">
+        <div class="cprow">
+            <div class="cpcolumn">
+                <div id="cppayment_store">
+                    <select title="providers" name="compropagoProvider" class="providers_list">
+                        {foreach $providers as $provider}
+                            <option value="{$provider['internal_name']}">{$provider['name']}</option>
+                        {/foreach}
+                    </select>
+                </div>
+                <div class="cppayment_text">
+                    <br>
+                    <p style="font-size:12px; color: #8f8f8f"><sup>*</sup>Comisionistas <a href="https://compropago.com/legal/corresponsales_cnbv.pdf" target="_blank" style="font-size:12px; color: #8f8f8f; font-weight:bold">autorizados por la CNBV</a> como corresponsales bancarios.</p>
+                </div>
+            </div>
+        </div>
+    </form>
+
+{else}
+    <!-- No seleccionado -->
+    <div class="cprow">
+        <div class="cpcolumn">
+            <br>
+            <h1>¡Temporalmente fuera de servicio!</h1>
+        </div>
+    </div>
+
+{/if}

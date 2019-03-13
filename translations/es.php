@@ -21,7 +21,7 @@
  * @since 2.0.0
  */
 global $_MODULE;
-$_MODULE = array();
+$_MODULE = [];
 
 //[modulePath]/compropago.php 
 $_MODULE['<{compropago}prestashop>compropago_51364ec58cec9ee5f07941677781c917'] = 'ComproPago';
@@ -41,10 +41,10 @@ $_MODULE['<{compropago}prestashop>compropago_a5faa48a5a05f3b45c78f7c27f63d288'] 
 $_MODULE['<{compropago}prestashop>compropago_889bdcebb4779a00387d204f74e1a44b'] = 'Panel de ComproPago';
 $_MODULE['<{compropago}prestashop>compropago_c9cc8cce247e49bae79f15173ce97354'] = 'Guardar';
 $_MODULE['<{compropago}prestashop>compropago_650be61892bf690026089544abbd9d26'] = 'Modo';
-$_MODULE['<{compropago}prestashop>compropago_13f77ac96d8b8d46bc553674bed34352'] = 'Modo Activo o de Pruebas?, cambie sus llaves de acuerdo al modo';
+$_MODULE['<{compropago}prestashop>compropago_13f77ac96d8b8d46bc553674bed34352'] = '¿Modo Activo o de Pruebas?, cambie sus llaves de acuerdo al modo';
 $_MODULE['<{compropago}prestashop>compropago_a849a06e943c4fa48e32586816a93852'] = 'Modo Activo';
 $_MODULE['<{compropago}prestashop>compropago_74e20d91279df8e47e489e30bbb8e63f'] = 'Modo Pruebas';
-$_MODULE['<{compropago}prestashop>compropago_6c4f89a480dc019becdd5437962c36ab'] = 'Llaves Incorrectas, Sus llaves Pública y Privada deben ser válidas';
+$_MODULE['<{compropago}prestashop>compropago_6c4f89a480dc019becdd5437962c36ab'] = 'Llaves incorrectas, Sus llaves Pública y Privada deben ser válidas';
 $_MODULE['<{compropago}prestashop>compropago_22dc559b60080d881e8758013a6ad7a1'] = 'El modo de  su cuenta de ComproPago y el modo de su Tienda deben ser iguales';
 $_MODULE['<{compropago}prestashop>compropago_d5c6a1ad57e8f1c556e4b98493fd4170'] = 'ALERTA ComproPago: Llaves para modo de ejecución diferente';
 $_MODULE['<{compropago}prestashop>compropago_d98319bc92c360fc70600470dc089470'] = 'Sus llaves y el modo de  su cuenta de ComproPago deben ser iguales';
@@ -70,7 +70,7 @@ $_MODULE['<{compropago}prestashop>compropago_3732639d6ae74e644a2306bba33e5da4'] 
 $_MODULE['<{compropago}prestashop>compropago_14c841eea7774b78caf79c58989f9625'] = 'Fecha de vencimiento';
 
 // [modulePath]/controllers/front/validation.php
-$_MODULE['<{compropago}prestashop>validation_e2b7dec8fa4b498156dfee6e4c84b156'] = 'Método de pago no disponible';
+$_MODULE['<{compropago}prestashop>validation_e2b7dec8fa4b498156dfee6e4c84b156'] = 'ComproPago: Método de pago no disponible';
 
 // [modulePath]/views/templates/hook/info.tpl
 $_MODULE['<{compropago}prestashop>infos_689256bbd6f0a9e1b86e5cee6b7a038d'] = 'Con ComproPago puedes recibir pagos en OXXO, 7Eleven y muchas tiendas más en todo México';
@@ -114,7 +114,5 @@ $_MODULE['<{compropago}prestashop>payment_return_0db71da7150c27142eef9d22b843b4a
 $_MODULE['<{compropago}prestashop>payment_return_decce112a9e64363c997b04aa71b7cb8'] = 'departamento de atención.';
 $_MODULE['<{compropago}prestashop>payment_return_9bdf695c5a30784327137011da6ef568'] = 'Hemos detectado un problema con su orden. Si considera que es un error contacte al';
 $_MODULE['<{compropago}prestashop>payment_return_d15feee53d81ea16269e54d4784fa123'] = 'Hemos detectado un problema con su orden. Si considera que es un error contacte al';
-
-
 
 return $_MODULE;

@@ -6,6 +6,9 @@
         "php": ">=5.6",
         "compropago/php-sdk": "5.0.0.0"
     },
+    "scripts": {
+        "build": "composer install && php build.php"
+    },
     "support": {
         "docs": "http://demo.compropago.com/plugins/prestashop-1-7",
         "email": "soporte@compropago.com",

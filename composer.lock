@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1fa3c2733b7d5f7137d9e8a4a232739f",
+    "content-hash": "90cfd166574b2223882f62d7747de5ca",
     "packages": [
         {
             "name": "compropago/php-sdk",

@@ -5,7 +5,7 @@
     "license": "AFL-3.0",
     "readme": "README.md",
     "type": "prestashop-module",
-    "version": "3.0.0.0",
+    "version": "3.0.0.1",
     "authors": [
         {
             "name": "Rolando Lucio",
@@ -31,11 +31,21 @@
         "optimize-autoloader": true
     },
     "require": {
-        "php": ">=5.6",
         "compropago/php-sdk": "5.0.0.0"
     },
     "scripts": {
-        "build": "composer install && php build.php"
+        "build": [
+            "composer install",
+            "php build.php"
+        ],
+        "clean": [
+            "rm -r vendor/",
+            "rm compropago.zip"
+        ]
+    },
+    "scripts-descriptions": {
+        "build": "",
+        "clean": ""
     },
     "support": {
         "docs": "http://demo.compropago.com/plugins/prestashop-1-7",

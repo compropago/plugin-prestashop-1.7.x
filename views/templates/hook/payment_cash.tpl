@@ -24,29 +24,41 @@
 *}
 
 
-{if $flag == true}
+{if $providers|@count gt 0}
 
-    <div class="cprow">
-        <div class="cpcolumn">
-        <br>
-            <h4>¿Dónde quieres pagar?<sup>*</sup></h4>
+    {if $providers|@count gt 1}
+        <div class="cprow">
+            <div class="cpcolumn">
+            <br>
+                <h4>¿Dónde quieres pagar?<sup>*</sup></h4>
+            </div>
         </div>
-    </div>
+    {/if}
 
     <form action="{$action}" id="payment-form" method="POST">
         <div class="cprow">
             <div class="cpcolumn">
                 <div id="cppayment_store">
-                    <select title="providers" name="compropagoProvider" class="providers_list">
-                        {foreach $providers as $provider}
-                            <option value="{$provider['internal_name']}">{$provider['name']}</option>
-                        {/foreach}
-                    </select>
+                    {if $providers|@count gt 1}
+                        <select title="providers" name="compropagoProvider" class="providers_list">
+                            {foreach $providers as $provider}
+                                <option value="{$provider['internal_name']}">{$provider['name']}</option>
+                            {/foreach}
+                        </select>
+                    {else}
+                        <p>
+                            * Realiza el pago en <b>{$providers[0]['name']}</b>
+                        </p>
+                        <input type="hidden" name="compropagoProvider" value="{$providers[0]['internal_name']}">
+                    {/if}
                 </div>
-                <div class="cppayment_text">
-                    <br>
-                    <p style="font-size:12px; color: #8f8f8f"><sup>*</sup>Comisionistas <a href="https://compropago.com/legal/corresponsales_cnbv.pdf" target="_blank" style="font-size:12px; color: #8f8f8f; font-weight:bold">autorizados por la CNBV</a> como corresponsales bancarios.</p>
-                </div>
+
+                {if $providers|@count gt 1}
+                    <div class="cppayment_text">
+                        <br />
+                        <p style="font-size:12px; color: #8f8f8f"><sup>*</sup>Comisionistas <a href="https://compropago.com/legal/corresponsales_cnbv.pdf" target="_blank" style="font-size:12px; color: #8f8f8f; font-weight:bold">autorizados por la CNBV</a> como corresponsales bancarios.</p>
+                    </div>
+                {/if}
             </div>
         </div>
     </form>
@@ -55,9 +67,8 @@
     <!-- No seleccionado -->
     <div class="cprow">
         <div class="cpcolumn">
-            <br>
-            <h1>¡Temporalmente fuera de servicio!</h1>
+            <br />
+            <h1>¡No hay establecimientos disponibles para realizar el pago!</h1>
         </div>
     </div>
-
 {/if}
